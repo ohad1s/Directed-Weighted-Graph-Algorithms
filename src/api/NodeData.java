@@ -23,6 +23,8 @@ public interface NodeData {
 	 */
 	public void setLocation(GeoLocation p);
 
+
+
 	/**
 	 * Returns the weight associated with this node.
 	 * @return
