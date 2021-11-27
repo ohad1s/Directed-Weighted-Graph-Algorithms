@@ -23,18 +23,18 @@ public interface DirectedWeightedGraphAlgorithms {
      * Inits the graph on which this set of algorithms operates on.
      * @param g
      */
-    public void init(DirectedWeightedGraph g);
+    public void init(DirectedWeighted g);
 
     /**
      * Returns the underlying graph of which this class works.
      * @return
      */
-    public DirectedWeightedGraph getGraph();
+    public DirectedWeighted getGraph();
     /**
      * Computes a deep copy of this weighted graph.
      * @return
      */
-    public DirectedWeightedGraph copy();
+    public DirectedWeighted copy();
     /**
      * Returns true if and only if (iff) there is a valid path from each node to each
      * other node. NOTE: assume directional graph (all n*(n-1) ordered pairs).
