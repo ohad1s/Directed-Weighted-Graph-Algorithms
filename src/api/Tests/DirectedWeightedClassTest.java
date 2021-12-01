@@ -2,7 +2,6 @@ package api.Tests;
 
 import api.*;
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Node;
 
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -21,7 +20,7 @@ class DirectedWeightedClassTest {
         assertEquals(1, nodeTest1.getLocation().x());
         assertEquals(2, nodeTest1.getLocation().y());
         assertEquals(3, nodeTest1.getLocation().z());
-        assertEquals(4, nodeTest1.getWeight());
+        assertEquals(0, nodeTest1.getWeight());
         NodeData nodeTest2 = graphTest.getNode(25);
         assertEquals(null, nodeTest2);
 
@@ -41,7 +40,7 @@ class DirectedWeightedClassTest {
 
     @Test
     void addNode() {
-        NodeData toAdd = new NodeDataClass(10, 0,5,7, 10);
+        NodeData toAdd = new NodeDataClass(10, 0,5,7);
         graphTest.addNode(toAdd);
         NodeData toCompare = graphTest.getNode(10);
         assertEquals(toAdd, toCompare);
@@ -54,7 +53,7 @@ class DirectedWeightedClassTest {
         assertEquals(0, edgeToCheck.getSrc());
         assertEquals(3, edgeToCheck.getDest());
         assertEquals(0, edgeToCheck.getWeight());
-        HashSet<EdgeData> edgesOfCurrentSrc = graphTest.getEdgesFromSpecificNode().get(0);
+        HashSet<EdgeData> edgesOfCurrentSrc = graphTest.getEdgesFromSpecificVertex().get(0);
         assertTrue(edgesOfCurrentSrc.contains(edgeToCheck));
 
     }
@@ -65,7 +64,7 @@ class DirectedWeightedClassTest {
         while (nodeIterTest.hasNext()) {
             NodeData toCheck = nodeIterTest.next();
             int key = toCheck.getKey();
-            Hashtable<Integer, NodeData> graphNodes = graphTest.getNodes();
+            Hashtable<Integer, NodeData> graphNodes = graphTest.getVertices();
             NodeData toCompare = graphNodes.get(key);
             assertEquals(toCheck, toCompare);
         }
@@ -135,7 +134,7 @@ class DirectedWeightedClassTest {
         assertEquals(currentMC +2, graphTest.getMC());
         graphTest.connect(3,5, 0);
         assertEquals(currentMC + 3, graphTest.getMC());
-        NodeData toAdd = new NodeDataClass(0,1,2,3,4);
+        NodeData toAdd = new NodeDataClass(0,1,2,3);
         graphTest.addNode(toAdd);
         assertEquals(currentMC + 4, graphTest.getMC());
         graphTest.addNode(toAdd);
@@ -148,7 +147,7 @@ class DirectedWeightedClassTest {
     public static DirectedWeightedClass generateGraph() {
         DirectedWeightedClass graph = new DirectedWeightedClass();
         for (int i = 0; i < 10; i++) {
-            NodeData nodeToAdd = new NodeDataClass(i, i + 1, i + 2, i + 3, i + 4);
+            NodeData nodeToAdd = new NodeDataClass(i, i + 1, i + 2, i + 3);
             graph.addNode(nodeToAdd);
         }
         for (int i = 0; i < 9; i++) {
