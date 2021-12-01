@@ -1,4 +1,4 @@
-import api.DirectedWeightedGraph;
+import api.DirectedWeighted;
 import api.DirectedWeightedGraphAlgorithms;
 
 /**
@@ -10,8 +10,8 @@ public class Ex2 {
      * @param json_file - a json file (e.g., G1.json - G3.gson)
      * @return
      */
-    public static DirectedWeightedGraph getGrapg(String json_file) {
-        DirectedWeightedGraph ans = null;
+    public static DirectedWeighted getGrapg(String json_file) {
+        DirectedWeighted ans = null;
         // ****** Add your code here ******
         //
         // ********************************
