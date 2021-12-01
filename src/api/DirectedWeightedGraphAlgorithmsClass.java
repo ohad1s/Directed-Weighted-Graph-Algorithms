@@ -1,18 +1,16 @@
 package api;
 
+
 import org.junit.jupiter.params.provider.EnumSource;
 import org.w3c.dom.Node;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGraphAlgorithms{
     private DirectedWeightedClass graph;
 
     public DirectedWeightedGraphAlgorithmsClass(){
         this.graph = new DirectedWeightedClass();
-
     }
 
     @Override
@@ -44,7 +42,22 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     @Override
     public boolean isConnected() {
-        return false;
+        int numOfVertices = graph.nodeSize();
+        boolean [] visited = new boolean[numOfVertices];
+        Arrays.fill(visited,false);
+        Iterator<NodeData> verticesIterator = graph.nodeIter();
+        while (verticesIterator.hasNext()){
+            NodeData currentVertex = verticesIterator.next();
+            dfs(currentVertex.getKey(), visited);
+
+            for (int i = 0; i <visited.length ; i++) {
+                if(!visited[i]){
+                    return false;
+                }
+            }
+            Arrays.fill(visited, false);
+        }
+        return true;
     }
 
     @Override
@@ -75,5 +88,24 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     @Override
     public boolean load(String file) {
         return false;
+    }
+
+    public boolean[] dfs (int key, boolean[] visited){
+        Stack<Integer> stack = new Stack<>();
+        stack.push(key);
+        visited[key] = true;
+        while (!stack.isEmpty()) {
+            int currentVertex = stack.pop();
+            Iterator<EdgeData> currentVertexEdgesIterator = graph.edgeIter(currentVertex);
+            while (currentVertexEdgesIterator.hasNext()) {
+                EdgeData currentEdge = currentVertexEdgesIterator.next();
+                int edgeDest = currentEdge.getDest();
+                if(!visited[edgeDest]){
+                    stack.push(edgeDest);
+                    visited[edgeDest] = true;
+                }
+            }
+        }
+        return visited;
     }
 }

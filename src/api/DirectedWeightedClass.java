@@ -85,26 +85,6 @@ public class DirectedWeightedClass implements DirectedWeighted {
         return edgesFromSpecificVertex;
     }
 
-    public void setVertices(Hashtable<Integer, NodeData> vertices) {
-        this.vertices = vertices;
-    }
-
-    public void setEdges(Hashtable<String, EdgeData> edges) {
-        this.edges = edges;
-    }
-
-    public void setIterableNodes(HashSet<NodeData> iterableNodes) {
-        this.iterableNodes = iterableNodes;
-    }
-
-    public void setIterableEdges(HashSet<EdgeData> iterableEdges) {
-        this.iterableEdges = iterableEdges;
-    }
-
-    public void setEdgesFromSpecificVertex(Hashtable<Integer, HashSet<EdgeData>> edgesFromSpecificVertex) {
-        this.edgesFromSpecificVertex = edgesFromSpecificVertex;
-    }
-
     /**
      * this method receives a vertex, and adds it to the graph in case it does not exist already.
      *
@@ -277,20 +257,32 @@ public class DirectedWeightedClass implements DirectedWeighted {
         return this.MC;
     }
 
-
+    /**
+     * this method creates a deep copy of the graph.
+     *
+     * @return
+     */
     public DirectedWeighted duplicate() {
-        Hashtable<Integer, NodeData> otherVertices = (Hashtable<Integer, NodeData>) this.vertices.clone();
-        Hashtable<String, EdgeData> otherEdges = (Hashtable<String, EdgeData>) this.edges.clone();
-        HashSet<NodeData> otherIterableNodes = (HashSet<NodeData>) this.iterableNodes.clone();
-        HashSet<EdgeData> otherIterableEdges = (HashSet<EdgeData>) this.iterableEdges.clone();
-        Hashtable<Integer, HashSet<EdgeData>> otherEdgesFromSpecificVertex = (Hashtable<Integer, HashSet<EdgeData>>) this.edgesFromSpecificVertex.clone();
-        DirectedWeightedClass otherGraph = new DirectedWeightedClass();
-        otherGraph.setVertices(otherVertices);
-        otherGraph.setEdges(otherEdges);
-        otherGraph.setIterableEdges(otherIterableEdges);
-        otherGraph.setIterableNodes(otherIterableNodes);
-        otherGraph.setEdgesFromSpecificVertex(otherEdgesFromSpecificVertex);
-        return otherGraph;
+        DirectedWeightedClass duplicatedGraph = new DirectedWeightedClass();
+        Iterator<NodeData> verticesIterator = this.nodeIter();
+        while (verticesIterator.hasNext()) {
+            NodeData currentVertex = verticesIterator.next();
+            double x = currentVertex.getLocation().x();
+            double y = currentVertex.getLocation().y();
+            double z = currentVertex.getLocation().z();
+            NodeData toAdd = new NodeDataClass(currentVertex.getKey(), x, y, z);
+            duplicatedGraph.addNode(toAdd);
+        }
+        Iterator<EdgeData> edgesIterator = this.edgeIter();
+        while (edgesIterator.hasNext()) {
+            EdgeData currentEdge = edgesIterator.next();
+            int src = currentEdge.getSrc();
+            int dest = currentEdge.getDest();
+            double weight = currentEdge.getWeight();
+            duplicatedGraph.connect(src, dest, weight);
+        }
+
+        return duplicatedGraph;
     }
 
 
