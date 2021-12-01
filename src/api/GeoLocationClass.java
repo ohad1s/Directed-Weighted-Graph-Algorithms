@@ -5,44 +5,69 @@ public class GeoLocationClass implements GeoLocation {
     private double y;
     private double z;
 
-
+    /**
+     * this method is the constructor of GeoLocationClass.
+     * @param x
+     * @param y
+     * @param z
+     */
     public GeoLocationClass(double x, double y, double z){
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public GeoLocationClass(GeoLocationClass other){
+    /**
+     * this is a copy constructor for another GeoLocation.
+     * @param other
+     */
+    public GeoLocationClass(GeoLocation other){
         this.x = other.x();
         this.y = other.y();
         this.z = other.z();
     }
 
+    /**
+     * this method return the GeoLocation's x position.
+     * @return this.x
+     */
     @Override
     public double x() {
         return this.x;
     }
-
+    /**
+     * this method return the GeoLocation's y position.
+     * @return this.y
+     */
     @Override
     public double y() {
         return this.y;
     }
-
+    /**
+     * this method return the GeoLocation's z position.
+     * @return this.z
+     */
     @Override
     public double z() {
         return this.z;
     }
 
+    /**
+     * this method calculates the distance from another 3D point using the formula:
+     * d = ((x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2)^1/2
+     * @param g
+     * @return
+     */
     @Override
-    public double distance(api.GeoLocation g) {
+    public double distance(GeoLocation g) {
         double otherX = g.x();
         double otherY = g.y();
         double otherZ = g.z();
-        double xDist = this.x - otherX;
-        double yDist = this.y - otherY;
-        double zDist = this.z - otherZ;
+        double xDist = Math.abs(this.x - otherX);
+        double yDist = Math.abs(this.y - otherY);
+        double zDist = Math.abs(this.z - otherZ);
 
-        double dist = Math.pow((Math.pow(xDist,2) + Math.pow(zDist, 2) + Math.pow(zDist, 2)), 0.5);
+        double dist = Math.pow((Math.pow(xDist,2) + Math.pow(yDist, 2) + Math.pow(zDist, 2)), 0.5);
         return dist;
     }
 }
