@@ -18,7 +18,7 @@ public class EdgeDataClass implements api.EdgeData {
         this.dest = dest;
         this.weight = weight;
         this.tag = 0;
-        this.info = "src: " + src + ", dest: " + dest + ", weight: " + weight;
+        this.info = "src: " + src + ", dest: " + dest + ", weight: " + weight + ", tag: " +tag;
     }
 
     /**

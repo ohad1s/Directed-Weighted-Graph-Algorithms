@@ -10,7 +10,7 @@ import org.w3c.dom.Node;
 import static org.junit.jupiter.api.Assertions.*;
 
 class NodeDataClassTest {
-    NodeData nodeTest = new NodeDataClass(0, 1.5 , 0.7, 13, 1.823);
+    NodeData nodeTest = new NodeDataClass(0, 1.5 , 0.7, 13);
 
     @Test
     void getKey() {
@@ -37,13 +37,13 @@ class NodeDataClassTest {
 
     @Test
     void getWeight() {
-        assertEquals(1.823, nodeTest.getWeight());
+        assertEquals(0, nodeTest.getWeight());
     }
 
     @Test
     void setWeight() {
-        nodeTest.setWeight(0);
-        assertEquals(0, nodeTest.getWeight());
+        nodeTest.setWeight(1);
+        assertEquals(1, nodeTest.getWeight());
     }
 
     @Test

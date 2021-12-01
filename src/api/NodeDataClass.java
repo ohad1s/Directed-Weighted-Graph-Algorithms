@@ -2,31 +2,29 @@ package api;
 
 public class NodeDataClass implements NodeData {
     private int key;
-    private GeoLocationClass location;
+    private GeoLocation location;
     private double weight;
     private int tag;
     private String info;
 
     /**
-     * this method is the NodeData constructor.
-     *
+     * this method is the vertex constructor.
      * @param key
      * @param x
      * @param y
      * @param z
      */
-    public NodeDataClass(int key, double x, double y, double z, double weight) {
+    public NodeDataClass(int key, double x, double y, double z ){
         this.key = key;
         this.location = new GeoLocationClass(x, y, z);
-        this.weight = weight;
+        this.weight = 0;
         this.tag = 0;
         this.info = "key: " + key + ", location: (" + x + ", " + y + ", " + z + "), weight: " + weight + ", tag: " + tag;
 
     }
 
     /**
-     * this method returns the vertex' key.
-     *
+     * this method returns the vertex's key.
      * @return key
      */
     @Override
@@ -35,32 +33,25 @@ public class NodeDataClass implements NodeData {
     }
 
     /**
-     * this method returns the vertex' GeoLocation.
-     *
+     * this method returns the vertex's GeoLocation.
      * @return GeoLocation
      */
     @Override
-    public GeoLocationClass getLocation() {
+    public GeoLocation getLocation() {
         return this.location;
     }
 
     /**
-     * this method sets vertex' GeoLocation based ont given GeoLocation.
-     *
+     * this method sets vertex's GeoLocation based ont given GeoLocation.
      * @param p - other GeoLocation
      */
     @Override
     public void setLocation(GeoLocation p) {
-        double newX = p.x();
-        double newY = p.y();
-        double newZ = p.z();
-        GeoLocationClass newLocation = new GeoLocationClass(newX, newY, newZ);
-        this.location = newLocation;
+        this.location = p;
     }
 
     /**
-     * this method returns the vertex' weight.
-     *
+     * this method returns the vertex's weight.
      * @return this.weight
      */
     @Override
@@ -69,8 +60,7 @@ public class NodeDataClass implements NodeData {
     }
 
     /**
-     * this method sets the vertex' weight.
-     *
+     * this method sets the vertex's weight.
      * @return
      */
     @Override
@@ -79,8 +69,7 @@ public class NodeDataClass implements NodeData {
     }
 
     /**
-     * this method returns the vertex' info String.
-     *
+     * this method returns the vertex's info String.
      * @return - this.info
      */
     @Override
@@ -89,7 +78,7 @@ public class NodeDataClass implements NodeData {
     }
 
     /**
-     * this method sets the vertex' info String
+     * this method sets the vertex's info String
      * @param s
      */
     @Override
@@ -98,7 +87,7 @@ public class NodeDataClass implements NodeData {
     }
 
     /**
-     * this method returns the vertex' tag.
+     * this method returns the vertex's tag.
      * @return - this.tag
      */
     @Override
@@ -107,7 +96,7 @@ public class NodeDataClass implements NodeData {
     }
 
     /**
-     * this method sets the vertex' tag.
+     * this method sets the vertex's tag.
      * @param t - the new value of the tag
      */
     @Override
