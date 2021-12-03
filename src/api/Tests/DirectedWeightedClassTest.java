@@ -2,7 +2,9 @@ package api.Tests;
 
 import api.*;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Node;
 
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -12,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class DirectedWeightedClassTest {
 
     DirectedWeightedClass graphTest = generateGraph();
+
+
 
     @Test
     void getNode() {
@@ -86,11 +90,11 @@ class DirectedWeightedClassTest {
     @Test
     void testEdgeIter() {
         int id = 0;
-        Iterator <EdgeData> iterForSpecificNodeEdges = graphTest.edgeIter(0);
+        Iterator <EdgeData> iterForSpecificVertexEdges = graphTest.edgeIter(0);
         EdgeData edge1 = graphTest.getEdge(0,1);
         EdgeData edge2 = graphTest.getEdge(0,3);
-        while (iterForSpecificNodeEdges.hasNext()){
-            EdgeData toCheck = iterForSpecificNodeEdges.next();
+        while (iterForSpecificVertexEdges.hasNext()){
+            EdgeData toCheck = iterForSpecificVertexEdges.next();
             int src = toCheck.getSrc();
             int dest = toCheck.getDest();
             EdgeData toCompare = graphTest.getEdge(src, dest);
@@ -101,16 +105,47 @@ class DirectedWeightedClassTest {
     @Test
     void removeNode() {
         NodeData toCompare = graphTest.getNode(0);
+        graphTest.connect(0,2,0);
+        graphTest.connect(0,3,0);
+        graphTest.connect(0,4,0);
+        graphTest.connect(0,5,0);
+        graphTest.connect(0,6,0);
+        graphTest.connect(0,7,0);
+        graphTest.connect(0,8,0);
+        graphTest.connect(0,9,0);
+        graphTest.connect(2,0,0);
+
+        int numOfEdges = graphTest.edgeSize();
+        int updatedEdgesOf2 =0;
         NodeData removedNode = graphTest.removeNode(0);
+        Iterator<EdgeData> edgeIter = graphTest.edgeIter(2);
+        while (edgeIter.hasNext()){
+            updatedEdgesOf2++;
+            edgeIter.next();
+        }
+
+        assertEquals(1, updatedEdgesOf2);
         assertEquals(toCompare, removedNode);
+        assertEquals(numOfEdges -9, graphTest.edgeSize());
 
     }
 
     @Test
     void removeEdge() {
         EdgeData toCompare = graphTest.getEdge(1,2);
+        graphTest.connect(1,3,0);
+        graphTest.connect(1,7,0);
+        int numOfEdges = graphTest.edgeSize();
         EdgeData removedEdge = graphTest.removeEdge(1,2);
+        int numOfEdgesFrom1 = 0;
+        Iterator<EdgeData> edgeIter = graphTest.edgeIter(1);
+        while (edgeIter.hasNext()){
+            edgeIter.next();
+            numOfEdgesFrom1 ++;
+        }
+        assertEquals(2, numOfEdgesFrom1);
         assertEquals(toCompare, removedEdge);
+        assertEquals(numOfEdges -1 , graphTest.edgeSize());
     }
 
     @Test
