@@ -62,6 +62,11 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     @Override
     public double shortestPathDist(int src, int dest) {
+        if(graph.getNode(src) == null || graph.getNode(dest) == null){
+            return -1;
+        }
+        Hashtable<Integer, Double> distFromSrc = new Hashtable<>();
+
         return 0;
     }
 
@@ -107,5 +112,28 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
             }
         }
         return visited;
+    }
+
+    public void calculateShortestPath(int src, Hashtable<Integer, Double> distFromSrc){
+        HashSet<Integer> visited = new HashSet<>();
+        HashSet<Integer> unvisited = new HashSet<>();
+        Iterator <NodeData> nodeIter = graph.nodeIter();
+        while (nodeIter.hasNext()){
+            NodeData currentVertex = nodeIter.next();
+            int vertexId = currentVertex.getKey();
+            unvisited.add(vertexId);
+            distFromSrc.put(vertexId, 10000.0);
+        }
+        distFromSrc.put(src, 0.0);
+        Iterator <EdgeData> edgeIter = graph.edgeIter(src);
+        while (edgeIter.hasNext()){
+            EdgeData currentEdge = edgeIter.next();
+            int dest = currentEdge.getDest();
+            double weight = currentEdge.getWeight();
+            distFromSrc.put(dest, weight);
+        }
+
+
+
     }
 }
