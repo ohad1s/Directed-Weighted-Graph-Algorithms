@@ -1,9 +1,6 @@
 package api;
 
 
-import org.junit.jupiter.params.provider.EnumSource;
-import org.w3c.dom.Node;
-
 import java.util.*;
 
 public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGraphAlgorithms{
@@ -62,13 +59,17 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     @Override
     public double shortestPathDist(int src, int dest) {
-        if(graph.getNode(src) == null || graph.getNode(dest) == null){
+        Hashtable<Integer, Double> shortestPaths=calculateShortestPathOHAD(src);
+        double shortesPathForDst=shortestPaths.get(dest);
+        if (shortesPathForDst==Double.MAX_VALUE) {
             return -1;
         }
-        Hashtable<Integer, Double> distFromSrc = new Hashtable<>();
-
-        return 0;
+        else{
+            return shortesPathForDst;
+        }
     }
+
+
 
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
@@ -136,4 +137,79 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
 
     }
+
+    /**
+     *
+     * @param src
+     * @return the shortest path distance to every node in the graph
+     */
+    public Hashtable<Integer, Double> calculateShortestPathOHAD(int src){
+        HashSet<Integer> unvisited = new HashSet<>();
+        for (int i=0; i<this.graph.nodeSize(); i++){
+            if (i!=src){
+                unvisited.add(i);
+            }
+        }
+        Hashtable<Integer, Double> distFromSrcFinally=calcDistFromSrc(src,unvisited);
+        Hashtable<Integer, Double> distFromSrcSpecific=calcDistFromSrc(src,unvisited);
+        while(!unvisited.isEmpty()) {
+            int minKey = 0;
+            double minDist = Double.MAX_VALUE;
+            for (Map.Entry<Integer, Double> entry : distFromSrcSpecific.entrySet()) {
+                int Key = entry.getKey();
+                double Dist = entry.getValue();
+                if (Dist <= minDist) {
+                    minKey = Key;
+                    minDist = Dist;
+                }
+            }
+            unvisited.remove(minKey);
+            distFromSrcSpecific = calcDistFromSrc(minKey, unvisited);
+            for (Map.Entry<Integer, Double> entry : distFromSrcSpecific.entrySet()) {
+                int Key = entry.getKey();
+                double Dist = entry.getValue();
+                double distToCheck = distFromSrcFinally.get(minKey) + distFromSrcSpecific.get(Key);
+                if (distToCheck <= distFromSrcFinally.get(Key)) {
+                    distFromSrcFinally.replace(Key, distToCheck);
+                }
+            }
+        }
+        return distFromSrcFinally;
+    }
+
+    /**
+     *
+     * @param src
+     * @return hashtable of dists between src to every node in the graph (by one edge if exists)
+     */
+    public Hashtable<Integer, Double> calcDistFromSrc(int src,HashSet<Integer>unvisited) {
+        Hashtable<Integer, Double> dist = new Hashtable<>();
+        for (int i: unvisited){
+            double distToAdd=calcDistSrcToDst(src,i);
+            dist.put(i,distToAdd);
+        }
+        return dist;
+    }
+
+
+    /**
+     *
+     * @param src
+     * @param dst
+     * @return distance between src node to dst node by one edge if exists
+     */
+    public double calcDistSrcToDst(int src, int dst){
+        HashSet<EdgeData> edgePerSrc = this.graph.getEdgesFromSpecificVertex().get(src);
+        for (EdgeData edge : edgePerSrc) {
+            if (edge.getDest()==dst){
+                return edge.getWeight();
+            }
+        }
+        return Double.MAX_VALUE;
+    }
+
 }
+
+
+
+
