@@ -69,11 +69,10 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         }
     }
 
-
-
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
-        return null;
+        List<Integer> shortestPathKeys= new LinkedList<Integer>();
+        return shortestPath(src, dest,shortestPathKeys);
     }
 
     @Override
@@ -206,6 +205,65 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
             }
         }
         return Double.MAX_VALUE;
+    }
+
+    /**
+     *
+     * @param src
+     * @param dst
+     * @param LL
+     * @return list of keys that represent the shortest path from src to dest
+     */
+    public List<Integer> calculateShortestPathOHADtoFindPath(int src,int dst,List<Integer>LL){
+        HashSet<Integer> unvisited = new HashSet<>();
+        for (int i=0; i<this.graph.nodeSize(); i++){
+            if (i!=src){
+                unvisited.add(i);
+            }
+        }
+        LL.add(src);
+        Hashtable<Integer, Double> distFromSrcFinally=calcDistFromSrc(src,unvisited);
+        Hashtable<Integer, Double> distFromSrcSpecific=calcDistFromSrc(src,unvisited);
+        while(!unvisited.isEmpty()) {
+            int minKey = 0;
+            double minDist = Double.MAX_VALUE;
+            for (Map.Entry<Integer, Double> entry : distFromSrcSpecific.entrySet()) {
+                int Key = entry.getKey();
+                double Dist = entry.getValue();
+                if (Dist <= minDist) {
+                    minKey = Key;
+                    minDist = Dist;
+                }
+            }
+            unvisited.remove(minKey);
+            distFromSrcSpecific = calcDistFromSrc(minKey, unvisited);
+            for (Map.Entry<Integer, Double> entry : distFromSrcSpecific.entrySet()) {
+                int Key = entry.getKey();
+                double Dist = entry.getValue();
+                double distToCheck = distFromSrcFinally.get(minKey) + distFromSrcSpecific.get(Key);
+                if (distToCheck <= distFromSrcFinally.get(Key)) {
+                    distFromSrcFinally.replace(Key, distToCheck);
+                    LL.add(minKey);
+                }
+            }
+        }
+        return LL;
+    }
+
+    /**
+     *
+     * @param src
+     * @param dest
+     * @param shortestPathLL
+     * @return return the shortest path by nodes (from keys)
+     */
+    private List<NodeData> shortestPath(int src, int dest, List<Integer> shortestPathLL) {
+        shortestPathLL=calculateShortestPathOHADtoFindPath(src,dest,shortestPathLL);
+        List<NodeData> shortestPathData = new LinkedList<NodeData>();
+        for (int i: shortestPathLL){
+            shortestPathData.add(this.graph.getNode(i));
+        }
+        return shortestPathData;
     }
 
 }
