@@ -20,7 +20,7 @@ class DirectedWeightedGraphAlgorithmsClassTest {
 
     @BeforeAll
     static void Setup(){
-        createG(10,g1);
+        createGraph(10,g1);
         g1.connect(0,1,0.5);
         g1.connect(0,2,2.5);
         g1.connect(2,3,1.98);
@@ -33,7 +33,7 @@ class DirectedWeightedGraphAlgorithmsClassTest {
         g1.connect(3,8,9.6);
         g1.connect(1,5,5.6);
 
-        createG(10,g2);
+        createGraph(10,g2);
         g2.connect(0,5,5);
         g2.connect(0,4,20);
         g2.connect(0,3,20);
@@ -55,7 +55,7 @@ class DirectedWeightedGraphAlgorithmsClassTest {
         g2.connect(9,2,15);
         g2.connect(9,1,5);
 
-        createG(4,g3);
+        createGraph(4,g3);
         g3.connect(0,1,5);
         g3.connect(2,1,5);
         g3.connect(0,2,5);
@@ -63,7 +63,7 @@ class DirectedWeightedGraphAlgorithmsClassTest {
         g3.connect(1,3,5);
         g3.connect(3,1,5);
 
-        createG(4,g4);
+        createGraph(4,g4);
         g4.connect(0,1,5);
         g4.connect(2,1,5);
         g4.connect(2,0,5);
@@ -72,7 +72,7 @@ class DirectedWeightedGraphAlgorithmsClassTest {
         g4.connect(3,1,5);
 
 
-        createG(3,g5);
+        createGraph(3,g5);
         g5.connect(0,1,5);
         g5.connect(1,2,5);
         g5.connect(2,0,5);
@@ -180,29 +180,26 @@ class DirectedWeightedGraphAlgorithmsClassTest {
     }
 
     @Test
-    void save() {
+    void load_save() {
         graphAlgoTest.init(g1);
         String fileName = "/home/itamarq/OOP_2021/Assignments/Ex2/out/graphs_json_files/g1.json";
         assertTrue(graphAlgoTest.save(fileName));
-    }
-
-    @Test
-    void load() {
-        String fileName = "/home/itamarq/OOP_2021/Assignments/Ex2/data/G1.json";
         assertTrue(graphAlgoTest.load(fileName));
-        Iterator<EdgeData> edgesIter = graphAlgoTest.getGraph().edgeIter();
-        Iterator<NodeData> nodesIter = graphAlgoTest.getGraph().nodeIter();
-        while (edgesIter.hasNext()){
-            EdgeData currentEdge = edgesIter.next();
-            System.out.println(currentEdge.getInfo());
+        Iterator<NodeData> nodeIter = graphAlgoTest.getGraph().nodeIter();
+        Iterator<EdgeData> edgeIter = graphAlgoTest.getGraph().edgeIter();
+        while(nodeIter.hasNext()){
+            NodeData currentNode = nodeIter.next();
+            NodeData toCompareNode = g1.getNode(currentNode.getKey());
+            assertEquals(currentNode.getLocation().x(), toCompareNode.getLocation().x());
+            assertEquals(currentNode.getLocation().y(), toCompareNode.getLocation().y());
+            assertEquals(currentNode.getLocation().z(), toCompareNode.getLocation().z());
+            assertNotEquals(currentNode, toCompareNode);
         }
-        while (nodesIter.hasNext()){
-            NodeData currentNode = nodesIter.next();
-            System.out.println(currentNode.getInfo());
-        }
+
     }
 
-    static void createG(int size, DirectedWeighted g) {
+
+    static void createGraph(int size, DirectedWeighted g) {
         for(int i = 0; i < size; i++){
             NodeData toAdd = new NodeDataClass(i, i, i, i);
             g.addNode(toAdd);
