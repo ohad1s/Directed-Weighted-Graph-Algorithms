@@ -100,7 +100,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     /**
      * this method calculates the shortest path between the two given vertices, using Dijkstra's algorithm.
-     * in case at least one of the nodes does not exist in the graph, the method will return null.
+     * in case at least one of the nodes does not exist in the graph, the method will return -1.
      * @param src  - start node
      * @param dest - end (target) node
      * @return
@@ -262,7 +262,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
      */
     public void calculateShortestPath(int src) {
         mapPrev.clear();
-        HashSet<NodeData> visited = new HashSet<>();
         HashSet<NodeData> unvisited = new HashSet<>();
         initiateUnvisitedAndMapDist(unvisited);
         mapDist.replace(src, 0.0);
@@ -284,8 +283,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
                 }
             }
             unvisited.remove(minDistNode);
-            visited.add(minDistNode);
-
         }
         return;
     }
