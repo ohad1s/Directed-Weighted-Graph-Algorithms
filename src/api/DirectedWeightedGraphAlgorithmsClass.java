@@ -78,6 +78,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return true;
     }
 
+
     @Override
     public double shortestPathDist(int src, int dest) {
         if (graph.getNode(src) == null || graph.getNode(dest) == null) {
@@ -204,7 +205,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     public void calculateShortestPath(int src) {
         mapPrev.clear();
-        HashSet<NodeData> visited = new HashSet<>();
         HashSet<NodeData> unvisited = new HashSet<>();
         Iterator<NodeData> nodeIter = graph.nodeIter();
         while (nodeIter.hasNext()) {
@@ -232,8 +232,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
                 }
             }
             unvisited.remove(minDistNode);
-            visited.add(minDistNode);
-
         }
         return;
     }
