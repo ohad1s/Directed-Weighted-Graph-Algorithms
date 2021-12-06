@@ -17,7 +17,6 @@ class GeoLocationClassTest {
 
     @Test
     void y() {
-        
         assertEquals(2.0, geoTest1.y());
     }
 
