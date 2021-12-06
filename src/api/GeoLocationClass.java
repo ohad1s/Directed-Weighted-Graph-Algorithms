@@ -70,4 +70,10 @@ public class GeoLocationClass implements GeoLocation {
         double dist = Math.pow((Math.pow(xDist,2) + Math.pow(yDist, 2) + Math.pow(zDist, 2)), 0.5);
         return dist;
     }
+
+    @Override
+    public String toString() {
+        return
+                x + ", " + y;
+    }
 }
