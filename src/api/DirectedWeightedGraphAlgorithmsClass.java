@@ -204,7 +204,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     public void calculateShortestPath(int src) {
         mapPrev.clear();
-        HashSet<NodeData> visited = new HashSet<>();
         HashSet<NodeData> unvisited = new HashSet<>();
         Iterator<NodeData> nodeIter = graph.nodeIter();
         while (nodeIter.hasNext()) {
@@ -232,8 +231,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
                 }
             }
             unvisited.remove(minDistNode);
-            visited.add(minDistNode);
-
         }
         return;
     }
