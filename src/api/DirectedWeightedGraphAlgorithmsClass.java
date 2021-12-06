@@ -6,7 +6,6 @@ import api.json.GraphJson;
 import api.json.NodeForJson;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -19,37 +18,22 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     private Hashtable<Integer, Integer> mapPrev;
     public static final double INFINITY = Double.POSITIVE_INFINITY;
 
-    /**
-     * this method is the constructor of DirectedWeightedGraphAlgorithm
-     */
     public DirectedWeightedGraphAlgorithmsClass() {
         this.graph = new DirectedWeightedClass();
         this.mapDist = new Hashtable<>();
         this.mapPrev = new Hashtable<>();
     }
 
-    /**
-     * this method initiate the graph on which the algorithms are executed to be the given graph.
-     * @param g
-     */
     @Override
     public void init(DirectedWeighted g) {
         this.graph = g;
     }
 
-    /**
-     * this method returns the graph on which the algorithms are executed.
-     * @return
-     */
     @Override
     public DirectedWeighted getGraph() {
         return this.graph;
     }
 
-    /**
-     * this method creates a deep copy of the graph.
-     * @return
-     */
     @Override
     public DirectedWeighted copy() {
         DirectedWeightedClass duplicatedGraph = new DirectedWeightedClass();
@@ -74,10 +58,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return duplicatedGraph;
     }
 
-    /**
-     * this method returns a boolean value whether the graph is connected ot not.
-     * @return
-     */
     @Override
     public boolean isConnected() {
         int numOfVertices = graph.nodeSize();
@@ -98,13 +78,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return true;
     }
 
-    /**
-     * this method calculates the shortest path between the two given vertices, using Dijkstra's algorithm.
-     * in case at least one of the nodes does not exist in the graph, the method will return null.
-     * @param src  - start node
-     * @param dest - end (target) node
-     * @return
-     */
     @Override
     public double shortestPathDist(int src, int dest) {
         if (graph.getNode(src) == null || graph.getNode(dest) == null) {
@@ -118,13 +91,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return (dist == INFINITY) ? -1.0 : dist;
     }
 
-    /**
-     * this method returns a list of the shortest path between the two given vertices, using Dijkstra's algorithm.
-     * in case at least one of the nodes does not exist in the graph, the method will return null.
-     * @param src  - start node
-     * @param dest - end (target) node
-     * @return
-     */
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
         if (graph.getNode(src) == null || graph.getNode(dest) == null) {
@@ -151,10 +117,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return path;
     }
 
-    /**
-     * this method return the vertex for which the distance from the farthest vertex from it is minimal.
-     * @return
-     */
     @Override
     public NodeData center() {
         if (!isConnected()) {
@@ -182,11 +144,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return null;
     }
 
-    /**
-     * this method saves the graph into the given json file.
-     * @param file - the file name (may include a relative path).
-     * @return
-     */
     @Override
     public boolean save(String file) {
         GraphJson serializedGraph = serializeGraph();
@@ -204,11 +161,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     }
 
-    /**
-     * this method initates the graph from a given json file.
-     * @param file - file name of JSON file
-     * @return
-     */
     @Override
     public boolean load(String file) {
         try {
@@ -231,12 +183,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     }
 
-    /**
-     * this method implements the dfs algorithm to find which vertices are accessible from the given src.
-     * @param key
-     * @param visited
-     * @return
-     */
     public boolean[] dfs(int key, boolean[] visited) {
         Stack<Integer> stack = new Stack<>();
         stack.push(key);
@@ -256,15 +202,17 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return visited;
     }
 
-    /**
-     * this method calculates the shortest path from the given vertex to each of the graph's vertices.
-     * @param src
-     */
     public void calculateShortestPath(int src) {
         mapPrev.clear();
         HashSet<NodeData> visited = new HashSet<>();
         HashSet<NodeData> unvisited = new HashSet<>();
-        initiateUnvisitedAndMapDist(unvisited);
+        Iterator<NodeData> nodeIter = graph.nodeIter();
+        while (nodeIter.hasNext()) {
+            NodeData currentVertex = nodeIter.next();
+            int vertexId = currentVertex.getKey();
+            unvisited.add(currentVertex);
+            mapDist.put(vertexId, INFINITY);
+        }
         mapDist.replace(src, 0.0);
         mapPrev.put(src, -1);
         while (!unvisited.isEmpty()) {
@@ -290,11 +238,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return;
     }
 
-    /**
-     * this method returns the vertex with the current min dist from the src (src is in calculateMinDist func).
-     * @param unvisited
-     * @return
-     */
+
     private NodeData findMinDist(HashSet<NodeData> unvisited) {
         if (unvisited.size() == 0) {
             return null;
@@ -315,10 +259,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return graph.getNode(keyOfMinVertex);
     }
 
-    /**
-     * this method returns the max value of mapDist.
-     * @return
-     */
     private double findMaxValue() {
         double maxDist = 0;
         Iterator<Double> distIter = mapDist.values().iterator();
@@ -331,10 +271,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return maxDist;
     }
 
-    /**
-     * this method serialize the graph into a json file.
-     * @return
-     */
     private GraphJson serializeGraph() {
         GraphJson serializedGraph = new GraphJson();
         Iterator<NodeData> nodeIter = this.graph.nodeIter();
@@ -350,11 +286,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return serializedGraph;
     }
 
-    /**
-     * this method deserialize the graph from a json file.
-     * @param jsonFile
-     * @return
-     */
     private DirectedWeighted deserializeGraph(String jsonFile) {
         DirectedWeighted loadedGraph = new DirectedWeightedClass();
         GraphJson fromJson = new Gson().fromJson(jsonFile, GraphJson.class);
@@ -376,21 +307,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return loadedGraph;
     }
 
-    /**
-     * this method initiates unvisited nodes with al the graph's nodes and set mapDist values to be infinity.
-     * @param unvisited
-     * @return
-     */
-    private HashSet<NodeData> initiateUnvisitedAndMapDist(HashSet<NodeData> unvisited){
-        Iterator<NodeData> nodeIter = graph.nodeIter();
-        while (nodeIter.hasNext()) {
-            NodeData currentVertex = nodeIter.next();
-            int vertexId = currentVertex.getKey();
-            unvisited.add(currentVertex);
-            mapDist.put(vertexId, INFINITY);
-        }
-        return unvisited;
-    }
 
 }
 
