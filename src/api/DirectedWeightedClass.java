@@ -253,33 +253,5 @@ public class DirectedWeightedClass implements DirectedWeighted {
         return this.MC;
     }
 
-    /**
-     * this method creates a deep copy of the graph.
-     *
-     * @return
-     */
-    public DirectedWeighted duplicate() {
-        DirectedWeightedClass duplicatedGraph = new DirectedWeightedClass();
-        Iterator<NodeData> verticesIterator = this.nodeIter();
-        while (verticesIterator.hasNext()) {
-            NodeData currentVertex = verticesIterator.next();
-            double x = currentVertex.getLocation().x();
-            double y = currentVertex.getLocation().y();
-            double z = currentVertex.getLocation().z();
-            NodeData toAdd = new NodeDataClass(currentVertex.getKey(), x, y, z);
-            duplicatedGraph.addNode(toAdd);
-        }
-        Iterator<EdgeData> edgesIterator = this.edgeIter();
-        while (edgesIterator.hasNext()) {
-            EdgeData currentEdge = edgesIterator.next();
-            int src = currentEdge.getSrc();
-            int dest = currentEdge.getDest();
-            double weight = currentEdge.getWeight();
-            duplicatedGraph.connect(src, dest, weight);
-        }
-
-        return duplicatedGraph;
-    }
-
 
 }

@@ -1,54 +1,95 @@
 package api;
 
 
+import api.json.EdgeForJson;
+import api.json.GraphJson;
+import api.json.NodeForJson;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
-public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGraphAlgorithms{
-    private DirectedWeightedClass graph;
+public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGraphAlgorithms {
+    private DirectedWeighted graph;
+    private Hashtable<Integer, Double> mapDist;
+    private Hashtable<Integer, Integer> mapPrev;
+    public static final double INFINITY = Double.POSITIVE_INFINITY;
 
-    public DirectedWeightedGraphAlgorithmsClass(){
+    /**
+     * this method is the constructor of DirectedWeightedGraphAlgorithm
+     */
+    public DirectedWeightedGraphAlgorithmsClass() {
         this.graph = new DirectedWeightedClass();
+        this.mapDist = new Hashtable<>();
+        this.mapPrev = new Hashtable<>();
     }
 
+    /**
+     * this method initiate the graph on which the algorithms are executed to be the given graph.
+     * @param g
+     */
     @Override
-    public void init(DirectedWeighted g){
-        Iterator <NodeData> gVerticesIter = g.nodeIter();
-        while (gVerticesIter.hasNext()){
-            NodeData toAdd = gVerticesIter.next();
-            graph.addNode(toAdd);
-        }
-        Iterator<EdgeData> gEdgesIter = g.edgeIter();
-        while (gEdgesIter.hasNext()){
-            EdgeData toAdd = gEdgesIter.next();
-            int srcToConnect = toAdd.getSrc();
-            int destToConnect = toAdd.getDest();
-            double weight = toAdd.getWeight();
-            graph.connect(srcToConnect, destToConnect, weight);
-        }
+    public void init(DirectedWeighted g) {
+        this.graph = g;
     }
 
+    /**
+     * this method returns the graph on which the algorithms are executed.
+     * @return
+     */
     @Override
     public DirectedWeighted getGraph() {
         return this.graph;
     }
 
+    /**
+     * this method creates a deep copy of the graph.
+     * @return
+     */
     @Override
     public DirectedWeighted copy() {
-        return this.graph.duplicate();
+        DirectedWeightedClass duplicatedGraph = new DirectedWeightedClass();
+        Iterator<NodeData> verticesIterator = this.graph.nodeIter();
+        while (verticesIterator.hasNext()) {
+            NodeData currentVertex = verticesIterator.next();
+            double x = currentVertex.getLocation().x();
+            double y = currentVertex.getLocation().y();
+            double z = currentVertex.getLocation().z();
+            NodeData toAdd = new NodeDataClass(currentVertex.getKey(), x, y, z);
+            duplicatedGraph.addNode(toAdd);
+        }
+        Iterator<EdgeData> edgesIterator = this.graph.edgeIter();
+        while (edgesIterator.hasNext()) {
+            EdgeData currentEdge = edgesIterator.next();
+            int src = currentEdge.getSrc();
+            int dest = currentEdge.getDest();
+            double weight = currentEdge.getWeight();
+            duplicatedGraph.connect(src, dest, weight);
+        }
+
+        return duplicatedGraph;
     }
 
+    /**
+     * this method returns a boolean value whether the graph is connected ot not.
+     * @return
+     */
     @Override
     public boolean isConnected() {
         int numOfVertices = graph.nodeSize();
-        boolean [] visited = new boolean[numOfVertices];
-        Arrays.fill(visited,false);
+        boolean[] visited = new boolean[numOfVertices];
+        Arrays.fill(visited, false);
         Iterator<NodeData> verticesIterator = graph.nodeIter();
-        while (verticesIterator.hasNext()){
+        while (verticesIterator.hasNext()) {
             NodeData currentVertex = verticesIterator.next();
             dfs(currentVertex.getKey(), visited);
 
-            for (int i = 0; i <visited.length ; i++) {
-                if(!visited[i]){
+            for (int i = 0; i < visited.length; i++) {
+                if (!visited[i]) {
                     return false;
                 }
             }
@@ -57,27 +98,83 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return true;
     }
 
+    /**
+     * this method calculates the shortest path between the two given vertices, using Dijkstra's algorithm.
+     * in case at least one of the nodes does not exist in the graph, the method will return -1.
+     * @param src  - start node
+     * @param dest - end (target) node
+     * @return
+     */
     @Override
     public double shortestPathDist(int src, int dest) {
-        Hashtable<Integer, Double> shortestPaths=calculateShortestPathOHAD(src);
-        double shortesPathForDst=shortestPaths.get(dest);
-        if (shortesPathForDst==Double.MAX_VALUE) {
-            return -1;
+        if (graph.getNode(src) == null || graph.getNode(dest) == null) {
+            return -1.0;
         }
-        else{
-            return shortesPathForDst;
+        if (graph.getNode(src) != null && src == dest) {
+            return 0;
         }
+        calculateShortestPath(src);
+        double dist = mapDist.get(dest);
+        return (dist == INFINITY) ? -1.0 : dist;
     }
 
+    /**
+     * this method returns a list of the shortest path between the two given vertices, using Dijkstra's algorithm.
+     * in case at least one of the nodes does not exist in the graph, the method will return null.
+     * @param src  - start node
+     * @param dest - end (target) node
+     * @return
+     */
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
-        List<Integer> shortestPathKeys= new LinkedList<Integer>();
-        return shortestPath(src, dest,shortestPathKeys);
+        if (graph.getNode(src) == null || graph.getNode(dest) == null) {
+            return null;
+        }
+        List<NodeData> path = new ArrayList<>();
+        if (graph.getNode(src) != null && src == dest) {
+            NodeData toAdd = graph.getNode(src);
+            path.add(toAdd);
+            return path;
+        }
+        calculateShortestPath(src);
+        if (!mapPrev.containsKey(dest)) {
+            return null;
+        }
+        NodeData destVertex = graph.getNode(dest);
+        path.add(destVertex);
+        int prevVertex = mapPrev.get(dest);
+        while (prevVertex != -1) {
+            NodeData toAdd = graph.getNode(prevVertex);
+            path.add(toAdd);
+            prevVertex = mapPrev.get(prevVertex);
+        }
+        return path;
     }
 
+    /**
+     * this method return the vertex for which the distance from the farthest vertex from it is minimal.
+     * @return
+     */
     @Override
     public NodeData center() {
-        return null;
+        if (!isConnected()) {
+            return null;
+        }
+        Iterator<NodeData> graphVerticesIter = graph.nodeIter();
+        NodeData currentVertex = graphVerticesIter.next();
+        int keyofCenter = currentVertex.getKey();
+        double minMaxDist = INFINITY;
+        while (graphVerticesIter.hasNext()) {
+            calculateShortestPath(currentVertex.getKey());
+            double maxValue = findMaxValue();
+            if (maxValue < minMaxDist) {
+                minMaxDist = maxValue;
+                keyofCenter = currentVertex.getKey();
+            }
+            currentVertex = graphVerticesIter.next();
+        }
+        NodeData centerVertex = this.graph.getNode(keyofCenter);
+        return centerVertex;
     }
 
     @Override
@@ -85,17 +182,62 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return null;
     }
 
+    /**
+     * this method saves the graph into the given json file.
+     * @param file - the file name (may include a relative path).
+     * @return
+     */
     @Override
     public boolean save(String file) {
-        return false;
+        GraphJson serializedGraph = serializeGraph();
+        try {
+            FileWriter myFile = new FileWriter(file);
+            GsonBuilder json = new GsonBuilder();
+            String toWrite = json.setPrettyPrinting().create().toJson(serializedGraph);
+            myFile.write(toWrite);
+            myFile.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 
+    /**
+     * this method initates the graph from a given json file.
+     * @param file - file name of JSON file
+     * @return
+     */
     @Override
     public boolean load(String file) {
-        return false;
+        try {
+            FileReader fileReader = new FileReader(file);
+            String jsonFile = "";
+            Scanner myScanner = new Scanner(fileReader);
+            while (myScanner.hasNextLine()) {
+                String lineToAdd = myScanner.nextLine();
+                jsonFile += lineToAdd;
+            }
+            myScanner.close();
+            DirectedWeighted deserializedGraph = deserializeGraph(jsonFile);
+            this.graph = deserializedGraph;
+            return true;
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 
-    public boolean[] dfs (int key, boolean[] visited){
+    /**
+     * this method implements the dfs algorithm to find which vertices are accessible from the given src.
+     * @param key
+     * @param visited
+     * @return
+     */
+    public boolean[] dfs(int key, boolean[] visited) {
         Stack<Integer> stack = new Stack<>();
         stack.push(key);
         visited[key] = true;
@@ -105,7 +247,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
             while (currentVertexEdgesIterator.hasNext()) {
                 EdgeData currentEdge = currentVertexEdgesIterator.next();
                 int edgeDest = currentEdge.getDest();
-                if(!visited[edgeDest]){
+                if (!visited[edgeDest]) {
                     stack.push(edgeDest);
                     visited[edgeDest] = true;
                 }
@@ -114,156 +256,137 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return visited;
     }
 
-    public void calculateShortestPath(int src, Hashtable<Integer, Double> distFromSrc){
-        HashSet<Integer> visited = new HashSet<>();
-        HashSet<Integer> unvisited = new HashSet<>();
-        Iterator <NodeData> nodeIter = graph.nodeIter();
-        while (nodeIter.hasNext()){
+    /**
+     * this method calculates the shortest path from the given vertex to each of the graph's vertices.
+     * @param src
+     */
+    public void calculateShortestPath(int src) {
+        mapPrev.clear();
+        HashSet<NodeData> unvisited = new HashSet<>();
+        initiateUnvisitedAndMapDist(unvisited);
+        mapDist.replace(src, 0.0);
+        mapPrev.put(src, -1);
+        while (!unvisited.isEmpty()) {
+            NodeData minDistNode = findMinDist(unvisited);
+            int keyOfMinDistNode = minDistNode.getKey();
+            double distOfCurrentKey = mapDist.get(keyOfMinDistNode);
+            Iterator<EdgeData> edgesLeavingFromCurrentKeyVertex = graph.edgeIter(keyOfMinDistNode);
+            while (edgesLeavingFromCurrentKeyVertex.hasNext()) {
+                EdgeData currentEdge = edgesLeavingFromCurrentKeyVertex.next();
+                int destVertexOfCurrentEdge = currentEdge.getDest();
+                double distOfCurrentEdge = currentEdge.getWeight();
+                double totalDist = distOfCurrentEdge + distOfCurrentKey;
+                double currentDestDistFromSrc = mapDist.get(destVertexOfCurrentEdge);
+                if (totalDist < currentDestDistFromSrc) {
+                    mapDist.put(destVertexOfCurrentEdge, totalDist);
+                    mapPrev.put(destVertexOfCurrentEdge, keyOfMinDistNode);
+                }
+            }
+            unvisited.remove(minDistNode);
+        }
+        return;
+    }
+
+    /**
+     * this method returns the vertex with the current min dist from the src (src is in calculateMinDist func).
+     * @param unvisited
+     * @return
+     */
+    private NodeData findMinDist(HashSet<NodeData> unvisited) {
+        if (unvisited.size() == 0) {
+            return null;
+        }
+        Iterator<NodeData> unvisitedVerticesIter = unvisited.iterator();
+        double minDist = INFINITY;
+        NodeData currentVertex = unvisitedVerticesIter.next();
+        int keyOfMinVertex = currentVertex.getKey();
+        while (unvisitedVerticesIter.hasNext()) {
+            int currentKey = currentVertex.getKey();
+            double currentDist = mapDist.get(currentKey);
+            if (currentDist < minDist) {
+                minDist = currentKey;
+                keyOfMinVertex = currentKey;
+            }
+            currentVertex = unvisitedVerticesIter.next();
+        }
+        return graph.getNode(keyOfMinVertex);
+    }
+
+    /**
+     * this method returns the max value of mapDist.
+     * @return
+     */
+    private double findMaxValue() {
+        double maxDist = 0;
+        Iterator<Double> distIter = mapDist.values().iterator();
+        while (distIter.hasNext()) {
+            double currentDist = distIter.next();
+            if (currentDist > maxDist) {
+                maxDist = currentDist;
+            }
+        }
+        return maxDist;
+    }
+
+    /**
+     * this method serialize the graph into a json file.
+     * @return
+     */
+    private GraphJson serializeGraph() {
+        GraphJson serializedGraph = new GraphJson();
+        Iterator<NodeData> nodeIter = this.graph.nodeIter();
+        Iterator<EdgeData> edgeIter = this.graph.edgeIter();
+        while (nodeIter.hasNext()) {
+            NodeData currentVertex = nodeIter.next();
+            serializedGraph.addNode(currentVertex);
+        }
+        while (edgeIter.hasNext()) {
+            EdgeData currentEdge = edgeIter.next();
+            serializedGraph.addEdge(currentEdge);
+        }
+        return serializedGraph;
+    }
+
+    /**
+     * this method deserialize the graph from a json file.
+     * @param jsonFile
+     * @return
+     */
+    private DirectedWeighted deserializeGraph(String jsonFile) {
+        DirectedWeighted loadedGraph = new DirectedWeightedClass();
+        GraphJson fromJson = new Gson().fromJson(jsonFile, GraphJson.class);
+        for (NodeForJson node : fromJson.Nodes) {
+            String[] location = node.pos.split(",");
+            double x = Double.parseDouble(location[0]);
+            double y = Double.parseDouble(location[1]);
+            double z = Double.parseDouble(location[2]);
+            int id = node.id;
+            NodeData toAdd = new NodeDataClass(id, x, y, z);
+            loadedGraph.addNode(toAdd);
+        }
+        for (EdgeForJson edge : fromJson.Edges) {
+            int src = edge.src;
+            int dest = edge.dest;
+            double weight = edge.w;
+            loadedGraph.connect(src, dest, weight);
+        }
+        return loadedGraph;
+    }
+
+    /**
+     * this method initiates unvisited nodes with al the graph's nodes and set mapDist values to be infinity.
+     * @param unvisited
+     * @return
+     */
+    private HashSet<NodeData> initiateUnvisitedAndMapDist(HashSet<NodeData> unvisited){
+        Iterator<NodeData> nodeIter = graph.nodeIter();
+        while (nodeIter.hasNext()) {
             NodeData currentVertex = nodeIter.next();
             int vertexId = currentVertex.getKey();
-            unvisited.add(vertexId);
-            distFromSrc.put(vertexId, 10000.0);
+            unvisited.add(currentVertex);
+            mapDist.put(vertexId, INFINITY);
         }
-        distFromSrc.put(src, 0.0);
-        Iterator <EdgeData> edgeIter = graph.edgeIter(src);
-        while (edgeIter.hasNext()){
-            EdgeData currentEdge = edgeIter.next();
-            int dest = currentEdge.getDest();
-            double weight = currentEdge.getWeight();
-            distFromSrc.put(dest, weight);
-        }
-
-
-
-    }
-
-    /**
-     *
-     * @param src
-     * @return the shortest path distance to every node in the graph
-     */
-    public Hashtable<Integer, Double> calculateShortestPathOHAD(int src){
-        HashSet<Integer> unvisited = new HashSet<>();
-        for (int i=0; i<this.graph.nodeSize(); i++){
-            if (i!=src){
-                unvisited.add(i);
-            }
-        }
-        Hashtable<Integer, Double> distFromSrcFinally=calcDistFromSrc(src,unvisited);
-        Hashtable<Integer, Double> distFromSrcSpecific=calcDistFromSrc(src,unvisited);
-        while(!unvisited.isEmpty()) {
-            int minKey = 0;
-            double minDist = Double.MAX_VALUE;
-            for (Map.Entry<Integer, Double> entry : distFromSrcSpecific.entrySet()) {
-                int Key = entry.getKey();
-                double Dist = entry.getValue();
-                if (Dist <= minDist) {
-                    minKey = Key;
-                    minDist = Dist;
-                }
-            }
-            unvisited.remove(minKey);
-            distFromSrcSpecific = calcDistFromSrc(minKey, unvisited);
-            for (Map.Entry<Integer, Double> entry : distFromSrcSpecific.entrySet()) {
-                int Key = entry.getKey();
-                double Dist = entry.getValue();
-                double distToCheck = distFromSrcFinally.get(minKey) + distFromSrcSpecific.get(Key);
-                if (distToCheck <= distFromSrcFinally.get(Key)) {
-                    distFromSrcFinally.replace(Key, distToCheck);
-                }
-            }
-        }
-        return distFromSrcFinally;
-    }
-
-    /**
-     *
-     * @param src
-     * @return hashtable of dists between src to every node in the graph (by one edge if exists)
-     */
-    public Hashtable<Integer, Double> calcDistFromSrc(int src,HashSet<Integer>unvisited) {
-        Hashtable<Integer, Double> dist = new Hashtable<>();
-        for (int i: unvisited){
-            double distToAdd=calcDistSrcToDst(src,i);
-            dist.put(i,distToAdd);
-        }
-        return dist;
-    }
-
-
-    /**
-     *
-     * @param src
-     * @param dst
-     * @return distance between src node to dst node by one edge if exists
-     */
-    public double calcDistSrcToDst(int src, int dst){
-        HashSet<EdgeData> edgePerSrc = this.graph.getEdgesFromSpecificVertex().get(src);
-        for (EdgeData edge : edgePerSrc) {
-            if (edge.getDest()==dst){
-                return edge.getWeight();
-            }
-        }
-        return Double.MAX_VALUE;
-    }
-
-    /**
-     *
-     * @param src
-     * @param dst
-     * @param LL
-     * @return list of keys that represent the shortest path from src to dest
-     */
-    public List<Integer> calculateShortestPathOHADtoFindPath(int src,int dst,List<Integer>LL){
-        HashSet<Integer> unvisited = new HashSet<>();
-        for (int i=0; i<this.graph.nodeSize(); i++){
-            if (i!=src){
-                unvisited.add(i);
-            }
-        }
-        LL.add(src);
-        Hashtable<Integer, Double> distFromSrcFinally=calcDistFromSrc(src,unvisited);
-        Hashtable<Integer, Double> distFromSrcSpecific=calcDistFromSrc(src,unvisited);
-        while(!unvisited.isEmpty()) {
-            int minKey = 0;
-            double minDist = Double.MAX_VALUE;
-            for (Map.Entry<Integer, Double> entry : distFromSrcSpecific.entrySet()) {
-                int Key = entry.getKey();
-                double Dist = entry.getValue();
-                if (Dist <= minDist) {
-                    minKey = Key;
-                    minDist = Dist;
-                }
-            }
-            unvisited.remove(minKey);
-            distFromSrcSpecific = calcDistFromSrc(minKey, unvisited);
-            for (Map.Entry<Integer, Double> entry : distFromSrcSpecific.entrySet()) {
-                int Key = entry.getKey();
-                double Dist = entry.getValue();
-                double distToCheck = distFromSrcFinally.get(minKey) + distFromSrcSpecific.get(Key);
-                if (distToCheck <= distFromSrcFinally.get(Key)) {
-                    distFromSrcFinally.replace(Key, distToCheck);
-                    LL.add(minKey);
-                }
-            }
-        }
-        return LL;
-    }
-
-    /**
-     *
-     * @param src
-     * @param dest
-     * @param shortestPathLL
-     * @return return the shortest path by nodes (from keys)
-     */
-    private List<NodeData> shortestPath(int src, int dest, List<Integer> shortestPathLL) {
-        shortestPathLL=calculateShortestPathOHADtoFindPath(src,dest,shortestPathLL);
-        List<NodeData> shortestPathData = new LinkedList<NodeData>();
-        for (int i: shortestPathLL){
-            shortestPathData.add(this.graph.getNode(i));
-        }
-        return shortestPathData;
+        return unvisited;
     }
 
 }
