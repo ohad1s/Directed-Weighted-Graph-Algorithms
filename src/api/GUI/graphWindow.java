@@ -1,49 +1,85 @@
 package api.GUI;
 
+import api.DirectedWeightedGraphAlgorithmsClass;
+
 import javax.swing.*;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 
-public class graphWindow extends JFrame implements MenuListener {
-    public graphWindow(JPanel p){
+public class graphWindow extends JFrame implements ActionListener {
+    DirectedWeightedGraphAlgorithmsClass graph;
+    Panel panel;
+    final Dimension ScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    MenuBar menuBar;
+    Menu menu, algo;
+    MenuItem load, save, draw;
+    MenuItem i1, i2, i3, i4, i5;
+
+    public graphWindow(DirectedWeightedGraphAlgorithmsClass graph) {
         super();
-
-        Dimension ScreenSize=Toolkit.getDefaultToolkit().getScreenSize();
+        this.graph=graph;
+        this.panel = new Panel(graph);
+        this.add(this.panel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(ScreenSize.height,ScreenSize.width);
-        MenuBar menuBar= new MenuBar();
-        Menu menu= new Menu("Menu");
-        Menu Algo= new Menu("Choose Algorithm");
-        MenuItem i1=new MenuItem("Item 1");
-        MenuItem i2=new MenuItem("Item 2");
-        MenuItem i3=new MenuItem("Item 3");
-        MenuItem i4=new MenuItem("Item 4");
-        MenuItem i5=new MenuItem("Item 5");
-        menu.add(Algo);
-        Algo.add(i1);
-        Algo.add(i2);
-        Algo.add(i3);
-        Algo.add(i4);
-        Algo.add(i5);
-        menuBar.add(menu);
-        this.setMenuBar(menuBar);
+        this.setSize(ScreenSize.height, ScreenSize.width);
+        this.menuBar = new MenuBar();
+        this.menu = new Menu("Menu");
+        this.load = new MenuItem("load");
+        this.save = new MenuItem("save");
+        this.draw = new MenuItem("draw");
+        this.algo = new Menu("Choose Algorithm");
+        this.i1 = new MenuItem("isConnected");
+        this.i2 = new MenuItem("shortestPathDist");
+        this.i3 = new MenuItem("shortestPath");
+        this.i4 = new MenuItem("center");
+        this.i5 = new MenuItem("tsp");
+        this.menu.add(this.load);
+        this.menu.add(this.save);
+        this.menu.add(this.draw);
+        this.menu.add(this.algo);
+        this.algo.add(this.i1);
+        this.algo.add(this.i2);
+        this.algo.add(this.i3);
+        this.algo.add(this.i4);
+        this.algo.add(this.i5);
+        this.menuBar.add(this.menu);
+        this.setMenuBar(this.menuBar);
         this.setVisible(true);
-        this.add(p);
-
+        this.load.addActionListener(this);
+        this.save.addActionListener(this);
+        this.draw.addActionListener(this);
     }
 
     @Override
-    public void menuSelected(MenuEvent e) {
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == this.save) {
+            JFileChooser j = new JFileChooser();
+             int returnValue = j.showSaveDialog(null);
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = j.getSelectedFile();
+                System.out.println("save....");
+                this.graph.save(selectedFile.getAbsolutePath());
+            }
 
-    }
+        }
+        if (e.getSource() == this.load) {
+            JFileChooser j = new JFileChooser();
+            int returnValue = j.showOpenDialog(null);
+            // int returnValue = jfc.showSaveDialog(null);
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = j.getSelectedFile();
+                System.out.println("loading....");
+                this.graph.load(selectedFile.getAbsolutePath());
+            }
 
-    @Override
-    public void menuDeselected(MenuEvent e) {
-    }
+        }
+        if (e.getSource() == this.draw) {
+            this.panel.draw();
+        }
 
-    @Override
-    public void menuCanceled(MenuEvent e) {
     }
 }

@@ -12,9 +12,10 @@ import java.util.LinkedList;
 public class Main {
     public static void main(String[]args){
         DirectedWeightedGraphAlgorithmsClass d= new DirectedWeightedGraphAlgorithmsClass();
-        d.load("data/G1.json");
-        Panel p=new Panel(d);
-        graphWindow g = new graphWindow(p);
+        graphWindow g = new graphWindow(d);
+
+
+
 
 
 
