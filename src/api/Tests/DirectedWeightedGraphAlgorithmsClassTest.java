@@ -9,7 +9,7 @@ import java.util.Iterator;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DirectedWeightedGraphAlgorithmsClassTest {
-    static DirectedWeightedGraphAlgorithms graphAlgoTest = new DirectedWeightedGraphAlgorithmsClass();
+
     static DirectedWeighted g1 = new DirectedWeightedClass();
     static DirectedWeighted g2 = new DirectedWeightedClass();
     static DirectedWeighted g3 = new DirectedWeightedClass();
@@ -19,77 +19,79 @@ class DirectedWeightedGraphAlgorithmsClassTest {
 
 
     @BeforeAll
-    static void Setup(){
-        createGraph(10,g1);
-        g1.connect(0,1,0.5);
-        g1.connect(0,2,2.5);
-        g1.connect(2,3,1.98);
-        g1.connect(1,4,8.3);
-        g1.connect(4,6,4.1);
-        g1.connect(8,6,2.4);
-        g1.connect(5,6,3.1);
-        g1.connect(6,5,3.1);
-        g1.connect(7,8,1.8);
-        g1.connect(3,8,9.6);
-        g1.connect(1,5,5.6);
+    static void Setup() {
+        createGraph(10, g1);
+        g1.connect(0, 1, 0.5);
+        g1.connect(0, 2, 2.5);
+        g1.connect(2, 3, 1.98);
+        g1.connect(1, 4, 8.3);
+        g1.connect(4, 6, 4.1);
+        g1.connect(8, 6, 2.4);
+        g1.connect(5, 6, 3.1);
+        g1.connect(6, 5, 3.1);
+        g1.connect(7, 8, 1.8);
+        g1.connect(3, 8, 9.6);
+        g1.connect(1, 5, 5.6);
 
-        createGraph(10,g2);
-        g2.connect(0,5,5);
-        g2.connect(0,4,20);
-        g2.connect(0,3,20);
-        g2.connect(0,1,10);
-        g2.connect(0,7,15);
-        g2.connect(1,3,10);
-        g2.connect(1,2,5);
-        g2.connect(2,3,5);
-        g2.connect(2,1,15);
-        g2.connect(3,4,10);
-        g2.connect(4,5,5);
-        g2.connect(6,5,10);
-        g2.connect(7,6,5);
-        g2.connect(7,0,5);
-        g2.connect(7,1,20);
-        g2.connect(8,7,20);
-        g2.connect(8,1,15);
-        g2.connect(8,9,10);
-        g2.connect(9,2,15);
-        g2.connect(9,1,5);
+        createGraph(10, g2);
+        g2.connect(0, 5, 5);
+        g2.connect(0, 4, 20);
+        g2.connect(0, 3, 20);
+        g2.connect(0, 1, 10);
+        g2.connect(0, 7, 15);
+        g2.connect(1, 3, 10);
+        g2.connect(1, 2, 5);
+        g2.connect(2, 3, 5);
+        g2.connect(2, 1, 15);
+        g2.connect(3, 4, 10);
+        g2.connect(4, 5, 5);
+        g2.connect(6, 5, 10);
+        g2.connect(7, 6, 5);
+        g2.connect(7, 0, 5);
+        g2.connect(7, 1, 20);
+        g2.connect(8, 7, 20);
+        g2.connect(8, 1, 15);
+        g2.connect(8, 9, 10);
+        g2.connect(9, 2, 15);
+        g2.connect(9, 1, 5);
 
-        createGraph(4,g3);
-        g3.connect(0,1,5);
-        g3.connect(2,1,5);
-        g3.connect(0,2,5);
-        g3.connect(3,0,5);
-        g3.connect(1,3,5);
-        g3.connect(3,1,5);
+        createGraph(4, g3);
+        g3.connect(0, 1, 5);
+        g3.connect(2, 1, 5);
+        g3.connect(0, 2, 5);
+        g3.connect(3, 0, 5);
+        g3.connect(1, 3, 5);
+        g3.connect(3, 1, 5);
 
-        createGraph(4,g4);
-        g4.connect(0,1,5);
-        g4.connect(2,1,5);
-        g4.connect(2,0,5);
-        g4.connect(0,3,5);
-        g4.connect(1,3,5);
-        g4.connect(3,1,5);
+        createGraph(4, g4);
+        g4.connect(0, 1, 5);
+        g4.connect(2, 1, 5);
+        g4.connect(2, 0, 5);
+        g4.connect(0, 3, 5);
+        g4.connect(1, 3, 5);
+        g4.connect(3, 1, 5);
 
 
-        createGraph(3,g5);
-        g5.connect(0,1,5);
-        g5.connect(1,2,5);
-        g5.connect(2,0,5);
+        createGraph(3, g5);
+        g5.connect(0, 1, 5);
+        g5.connect(1, 2, 5);
+        g5.connect(2, 0, 5);
     }
+
     @Test
     void init() {
+        DirectedWeightedGraphAlgorithms graphAlgoTest = new DirectedWeightedGraphAlgorithmsClass();
         DirectedWeighted graphToInit = g1;
         graphAlgoTest.init(graphToInit);
         DirectedWeighted algoGraphIter = graphAlgoTest.getGraph();
         Iterator<NodeData> algoGraphVerticesIter = algoGraphIter.nodeIter();
-        while (algoGraphVerticesIter.hasNext()){
+        while (algoGraphVerticesIter.hasNext()) {
             NodeData algoGraphVertex = algoGraphVerticesIter.next();
             NodeData initGraphVertex = g1.getNode(algoGraphVertex.getKey());
             assertEquals(initGraphVertex, algoGraphVertex);
         }
         Iterator<NodeData> initGraphVerticesIter = g1.nodeIter();
-        while (initGraphVerticesIter.hasNext()){
+        while (initGraphVerticesIter.hasNext()) {
             NodeData initGraphVertex = initGraphVerticesIter.next();
             NodeData algoGraphVertex = graphAlgoTest.getGraph().getNode(initGraphVertex.getKey());
             assertEquals(initGraphVertex, algoGraphVertex);
@@ -100,11 +102,12 @@ class DirectedWeightedGraphAlgorithmsClassTest {
 
     @Test
     void copy() {
-        DirectedWeighted graphToInit = g1;
+         DirectedWeightedGraphAlgorithms graphAlgoTest = new DirectedWeightedGraphAlgorithmsClass();
+        DirectedWeighted graphToInit = g5;
         graphAlgoTest.init(graphToInit);
         DirectedWeighted duplicatedGraph = graphAlgoTest.copy();
         Iterator<NodeData> verticesIterator = graphAlgoTest.getGraph().nodeIter();
-        while (verticesIterator.hasNext()){
+        while (verticesIterator.hasNext()) {
             NodeData currentVertex = verticesIterator.next();
             int key = currentVertex.getKey();
             NodeData duplicatedGraphVortex = duplicatedGraph.getNode(key);
@@ -117,6 +120,7 @@ class DirectedWeightedGraphAlgorithmsClassTest {
 
     @Test
     void isConnected() {
+        DirectedWeightedGraphAlgorithms graphAlgoTest = new DirectedWeightedGraphAlgorithmsClass();
         graphAlgoTest.init(g1);
         System.out.println("g1 = " + graphAlgoTest.isConnected());
         assertFalse(graphAlgoTest.isConnected());
@@ -141,34 +145,39 @@ class DirectedWeightedGraphAlgorithmsClassTest {
     }
 
     @Test
-    void shortestPathDist() {
-        graphAlgoTest.init(g1);
-        assertEquals(5.6,graphAlgoTest.shortestPathDist(1,5), EPS);
-        assertEquals(0.5,graphAlgoTest.shortestPathDist(0,1));
-        assertEquals(4.48,graphAlgoTest.shortestPathDist(0,3));
-        assertEquals(7.300000000000001,graphAlgoTest.shortestPathDist(7,5));
-        assertEquals(-1.0,graphAlgoTest.shortestPathDist(8,3));
-        assertEquals(0.0,graphAlgoTest.shortestPathDist(2,2));
-        assertEquals(-1.0,graphAlgoTest.shortestPathDist(20,20));
-        assertEquals(-1.0,graphAlgoTest.shortestPathDist(0,20));
+    void shortestPathDistG1() {
+        DirectedWeightedGraphAlgorithms graphAlgoTest = new DirectedWeightedGraphAlgorithmsClass();
+        DirectedWeighted graphToInit = g1;
+        graphAlgoTest.init(graphToInit);
+        assertEquals(5.6, graphAlgoTest.shortestPathDist(1, 5), EPS);
+        assertEquals(0.5, graphAlgoTest.shortestPathDist(0, 1));
+        assertEquals(4.48, graphAlgoTest.shortestPathDist(0, 3));
+        assertEquals(7.300000000000001, graphAlgoTest.shortestPathDist(7, 5));
+        assertEquals(-1.0, graphAlgoTest.shortestPathDist(8, 3));
+        assertEquals(0.0, graphAlgoTest.shortestPathDist(2, 2));
+        assertEquals(-1.0, graphAlgoTest.shortestPathDist(20, 20));
+        assertEquals(-1.0, graphAlgoTest.shortestPathDist(0, 20));
+
+
     }
 
     @Test
-    void shortestPath() {
-
-        graphAlgoTest.init(g2);
-        assertEquals(25.0,graphAlgoTest.shortestPathDist(1,5));
-        assertEquals(10.0,graphAlgoTest.shortestPathDist(0,1));
-        assertEquals(20.0,graphAlgoTest.shortestPathDist(0,3));
-        assertEquals(10.0,graphAlgoTest.shortestPathDist(7,5));
-        assertEquals(25.0,graphAlgoTest.shortestPathDist(8,3));
-        assertEquals(25.0,graphAlgoTest.shortestPathDist(8,0));
-        assertEquals(-1.0,graphAlgoTest.shortestPathDist(9,0));
-        assertEquals(0.0,graphAlgoTest.shortestPathDist(2,2));
-        assertEquals(-1.0,graphAlgoTest.shortestPathDist(20,20));
-        assertEquals(-1.0,graphAlgoTest.shortestPathDist(1,20));
-        assertEquals(5.0,graphAlgoTest.shortestPathDist(2,3));
-        assertEquals(30.0,graphAlgoTest.shortestPathDist(9,5));
+    void shortestPathDistG2() {
+        DirectedWeightedGraphAlgorithms graphAlgoTest = new DirectedWeightedGraphAlgorithmsClass();
+        DirectedWeighted graphToInit = g2;
+        graphAlgoTest.init(graphToInit);
+        assertEquals(25.0, graphAlgoTest.shortestPathDist(1, 5));
+        assertEquals(10.0, graphAlgoTest.shortestPathDist(0, 1));
+        assertEquals(20.0, graphAlgoTest.shortestPathDist(0, 3));
+        assertEquals(10.0, graphAlgoTest.shortestPathDist(7, 5));
+        assertEquals(25.0, graphAlgoTest.shortestPathDist(8, 3));
+        assertEquals(25.0, graphAlgoTest.shortestPathDist(8, 0));
+        assertEquals(-1.0, graphAlgoTest.shortestPathDist(9, 0));
+        assertEquals(0.0, graphAlgoTest.shortestPathDist(2, 2));
+        assertEquals(-1.0, graphAlgoTest.shortestPathDist(20, 20));
+        assertEquals(-1.0, graphAlgoTest.shortestPathDist(1, 20));
+        assertEquals(5.0, graphAlgoTest.shortestPathDist(2, 3));
+        assertEquals(30.0, graphAlgoTest.shortestPathDist(9, 5));
     }
 
     @Test
@@ -181,13 +190,14 @@ class DirectedWeightedGraphAlgorithmsClassTest {
 
     @Test
     void load_save() {
-        graphAlgoTest.init(g1);
-        String fileName = "/home/itamarq/OOP_2021/Assignments/Ex2/out/graphs_json_files/g1.json";
+        DirectedWeightedGraphAlgorithms graphAlgoTest = new DirectedWeightedGraphAlgorithmsClass();
+        graphAlgoTest.init(g3);
+        String fileName = "/home/itamarq/OOP_2021/Assignments/Ex2/out/graphs_json_files/g3.json";
         assertTrue(graphAlgoTest.save(fileName));
         assertTrue(graphAlgoTest.load(fileName));
         Iterator<NodeData> nodeIter = graphAlgoTest.getGraph().nodeIter();
         Iterator<EdgeData> edgeIter = graphAlgoTest.getGraph().edgeIter();
-        while(nodeIter.hasNext()){
+        while (nodeIter.hasNext()) {
             NodeData currentNode = nodeIter.next();
             NodeData toCompareNode = g1.getNode(currentNode.getKey());
             assertEquals(currentNode.getLocation().x(), toCompareNode.getLocation().x());
@@ -200,7 +210,7 @@ class DirectedWeightedGraphAlgorithmsClassTest {
 
 
     static void createGraph(int size, DirectedWeighted g) {
-        for(int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             NodeData toAdd = new NodeDataClass(i, i, i, i);
             g.addNode(toAdd);
         }
