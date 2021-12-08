@@ -14,6 +14,8 @@ public class Panel extends JPanel {
     int[]nodesY;
     boolean shorted;
     List<NodeData>shortedP;
+    boolean isCenter;
+    NodeData center;
 
     public Panel(DirectedWeightedClass graph) {
         super();
@@ -23,6 +25,7 @@ public class Panel extends JPanel {
         this.nodesX=new int[this.graph.nodeSize()];
         this.nodesY=new int[this.graph.nodeSize()];
         this.shorted=false;
+        this.isCenter=false;
     }
 
 
@@ -61,6 +64,9 @@ public class Panel extends JPanel {
         DrawEdges(g);
         if (shorted){
             DrawShortestPath(g,this.shortedP);
+        }
+        if (isCenter){
+            boldCenter(g,this.center);
         }
     }
 
@@ -110,6 +116,19 @@ public class Panel extends JPanel {
                 p1=p2;
             }
         }
+    }
+
+    private void boldCenter(Graphics g, NodeData center) {
+        int x1 = this.nodesX[center.getKey()];
+        int y1 = this.nodesY[center.getKey()];
+        g.setColor(Color.MAGENTA);
+        g.fillOval(x1-9,y1-9,18,18);
+        Graphics2D g2d=(Graphics2D)g;
+        g2d.setColor(Color.RED);
+        g2d.setStroke(new BasicStroke(12));
+        int key= center.getKey();
+        String keyS=String.valueOf(key);
+        g2d.drawString(keyS,x1-9,y1-9);
     }
 }
 

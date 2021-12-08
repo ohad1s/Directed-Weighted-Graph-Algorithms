@@ -115,8 +115,26 @@ public class graphWindow extends JFrame implements ActionListener {
             this.add(this.panel);
             this.repaint();
             this.revalidate();
+            double dist=this.graph.shortestPathDist(first,last);
+            JOptionPane.showMessageDialog(this.panel,
+                    "The shortest path distance between "+first+" and "+last+" is:\n"+dist,
+                    "You got a shortest path!",
+                    JOptionPane.INFORMATION_MESSAGE);
+
         }
         else if (e.getSource() == this.i4){
+            NodeData center=this.graph.center();
+            this.remove(this.panel);
+            this.panel=new Panel((DirectedWeightedClass) this.graph.getGraph());
+            this.panel.isCenter=true;
+            this.panel.center=center;
+            this.add(this.panel);
+            this.repaint();
+            this.revalidate();
+            JOptionPane.showMessageDialog(this.panel,
+                    "The center node is:\n "+center.getKey(),
+                    "Center Node!",
+                    JOptionPane.INFORMATION_MESSAGE);
 
         }
         else if (e.getSource() == this.i5){
