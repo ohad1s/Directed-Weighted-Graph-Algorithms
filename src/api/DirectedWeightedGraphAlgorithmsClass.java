@@ -6,9 +6,7 @@ import api.json.GraphJson;
 import api.json.NodeForJson;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.w3c.dom.Node;
 
-import javax.swing.plaf.IconUIResource;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -37,7 +35,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     @Override
     public void init(DirectedWeighted g) {
         this.graph = g;
-        this.mapDist.clear();
     }
 
     /**
@@ -182,24 +179,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
-        if(cities.size() == 1){
-            return cities;
-        }
-        List<NodeData> toReturn = new ArrayList<>();
-        HashSet<Integer> unvisited = new HashSet<>();
-        initiateSetForTSP(cities, unvisited);
-        Iterator<Integer> unvisitedIter = unvisited.iterator();
-        int currentVertexId = unvisitedIter.next();
-
-        while (unvisitedIter.hasNext()){
-            calculateShortestPath(currentVertexId);
-            int nextVertex = findIdOfMinValue(unvisited);
-            List<NodeData> pathFromCurrentToNext = shortestPath(currentVertexId, nextVertex);
-            toReturn.addAll(pathFromCurrentToNext);
-            unvisited.remove(currentVertexId);
-            currentVertexId = nextVertex;
-        }
-        return toReturn;
+        return null;
     }
 
     /**
@@ -324,7 +304,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
             int currentKey = currentVertex.getKey();
             double currentDist = mapDist.get(currentKey);
             if (currentDist < minDist) {
-                minDist = currentDist;
+                minDist = currentKey;
                 keyOfMinVertex = currentKey;
             }
             currentVertex = unvisitedVerticesIter.next();
@@ -346,27 +326,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
             }
         }
         return maxDist;
-    }
-
-    public int findIdOfMinValue(HashSet <Integer> unvisited){
-        Iterator<Integer> unvisitedIter = unvisited.iterator();
-
-        int idOfMinValue = -1;
-        double minValue = INFINITY;
-        while (unvisitedIter.hasNext()){
-            int currentVertexId = unvisitedIter.next();
-            double distToCurrentVertex = mapDist.get(currentVertexId);
-            if(distToCurrentVertex < minValue){
-                minValue = distToCurrentVertex;
-                idOfMinValue = currentVertexId;
-            }
-        }
-        if(idOfMinValue == -1){
-            Iterator<Integer> newIter= unvisited.iterator();
-            int idToReturn = newIter.next();
-            return idToReturn;
-        }
-        return idOfMinValue;
     }
 
     /**
@@ -419,7 +378,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
      * @param unvisited
      * @return
      */
-    private HashSet<NodeData> initiateUnvisitedAndMapDist(HashSet<NodeData> unvisited) {
+    private HashSet<NodeData> initiateUnvisitedAndMapDist(HashSet<NodeData> unvisited){
         Iterator<NodeData> nodeIter = graph.nodeIter();
         while (nodeIter.hasNext()) {
             NodeData currentVertex = nodeIter.next();
@@ -428,13 +387,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
             mapDist.put(vertexId, INFINITY);
         }
         return unvisited;
-    }
-
-    public void initiateSetForTSP(List<NodeData> nodeList, HashSet<Integer> unvisited){
-        for (NodeData node : nodeList){
-            int vertexId = node.getKey();
-            unvisited.add(vertexId);
-        }
     }
 
 }
