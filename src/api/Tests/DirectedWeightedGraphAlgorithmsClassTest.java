@@ -100,7 +100,7 @@ class DirectedWeightedGraphAlgorithmsClassTest {
 
     @Test
     void copy() {
-        DirectedWeighted graphToInit = g1;
+        DirectedWeighted graphToInit = g3;
         graphAlgoTest.init(graphToInit);
         DirectedWeighted duplicatedGraph = graphAlgoTest.copy();
         Iterator<NodeData> verticesIterator = graphAlgoTest.getGraph().nodeIter();
@@ -142,15 +142,16 @@ class DirectedWeightedGraphAlgorithmsClassTest {
 
     @Test
     void shortestPathDist() {
+
         graphAlgoTest.init(g1);
         assertEquals(5.6,graphAlgoTest.shortestPathDist(1,5), EPS);
-        assertEquals(0.5,graphAlgoTest.shortestPathDist(0,1));
-        assertEquals(4.48,graphAlgoTest.shortestPathDist(0,3));
-        assertEquals(7.300000000000001,graphAlgoTest.shortestPathDist(7,5));
-        assertEquals(-1.0,graphAlgoTest.shortestPathDist(8,3));
-        assertEquals(0.0,graphAlgoTest.shortestPathDist(2,2));
-        assertEquals(-1.0,graphAlgoTest.shortestPathDist(20,20));
-        assertEquals(-1.0,graphAlgoTest.shortestPathDist(0,20));
+        assertEquals(0.5,graphAlgoTest.shortestPathDist(0,1), EPS);
+        assertEquals(4.48,graphAlgoTest.shortestPathDist(0,3), EPS);
+        assertEquals(7.300000000000001,graphAlgoTest.shortestPathDist(7,5), EPS);
+        assertEquals(-1.0,graphAlgoTest.shortestPathDist(8,3), EPS);
+        assertEquals(0.0,graphAlgoTest.shortestPathDist(2,2), EPS);
+        assertEquals(-1.0,graphAlgoTest.shortestPathDist(20,20), EPS);
+        assertEquals(-1.0,graphAlgoTest.shortestPathDist(0,20), EPS);
     }
 
     @Test
@@ -197,7 +198,6 @@ class DirectedWeightedGraphAlgorithmsClassTest {
         }
 
     }
-
 
     static void createGraph(int size, DirectedWeighted g) {
         for(int i = 0; i < size; i++){
