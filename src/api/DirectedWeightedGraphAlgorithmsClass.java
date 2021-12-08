@@ -15,8 +15,11 @@ import java.util.*;
 
 public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGraphAlgorithms {
     private DirectedWeighted graph;
+    private DirectedWeighted invertedGraph;
     private Hashtable<Integer, Double> mapDist;
     private Hashtable<Integer, Integer> mapPrev;
+    private static final int VISITED = 1;
+    private static final int NOT_VISITED = 0;
     public static final double INFINITY = Double.POSITIVE_INFINITY;
 
     /**
@@ -24,21 +27,25 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
      */
     public DirectedWeightedGraphAlgorithmsClass() {
         this.graph = new DirectedWeightedClass();
+        this.invertedGraph = new DirectedWeightedClass();
         this.mapDist = new Hashtable<>();
         this.mapPrev = new Hashtable<>();
     }
 
     /**
      * this method initiate the graph on which the algorithms are executed to be the given graph.
+     *
      * @param g
      */
     @Override
     public void init(DirectedWeighted g) {
         this.graph = g;
+        this.invertedGraph = invertGraph();
     }
 
     /**
      * this method returns the graph on which the algorithms are executed.
+     *
      * @return
      */
     @Override
@@ -48,6 +55,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     /**
      * this method creates a deep copy of the graph.
+     *
      * @return
      */
     @Override
@@ -76,31 +84,63 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     /**
      * this method returns a boolean value whether the graph is connected ot not.
+     *
      * @return
      */
     @Override
     public boolean isConnected() {
-        int numOfVertices = graph.nodeSize();
-        boolean[] visited = new boolean[numOfVertices];
-        Arrays.fill(visited, false);
-        Iterator<NodeData> verticesIterator = graph.nodeIter();
-        while (verticesIterator.hasNext()) {
-            NodeData currentVertex = verticesIterator.next();
-            dfs(currentVertex.getKey(), visited);
 
-            for (int i = 0; i < visited.length; i++) {
-                if (!visited[i]) {
-                    return false;
-                }
+        Iterator<NodeData> graphNodeIter = graph.nodeIter();
+        NodeData graphFirstNode = graphNodeIter.next();
+
+        return isConnected(graph, graphFirstNode) && isConnected(invertedGraph, graphFirstNode);
+    }
+
+    private boolean isConnected(DirectedWeighted g, NodeData nodeFirst) {
+        setAllTags(g, NOT_VISITED);
+        BFS(nodeFirst, g);
+        Iterator<NodeData> nodesIter = g.nodeIter();
+        while (nodesIter.hasNext()) {
+            NodeData currentNode = nodesIter.next();
+            if (currentNode.getTag() == NOT_VISITED) {
+                return false;
             }
-            Arrays.fill(visited, false);
         }
         return true;
+    }
+
+    private void BFS(NodeData node, DirectedWeighted g) {
+        NodeData firstNode = node;
+        Queue<NodeData> queue = new LinkedList<>();
+        firstNode.setTag(VISITED);
+        queue.add(firstNode);
+        while (!queue.isEmpty()) {
+            firstNode = queue.poll();
+            Iterator<EdgeData> currentNodeEdgesIter = g.edgeIter(firstNode.getKey());
+            while (currentNodeEdgesIter.hasNext()) {
+                EdgeData currentEdge = currentNodeEdgesIter.next();
+                int destNodeId = currentEdge.getDest();
+                NodeData destNode = g.getNode(destNodeId);
+                if (destNode.getTag() == NOT_VISITED) {
+                    destNode.setTag(VISITED);
+                    queue.add(destNode);
+                }
+            }
+        }
+    }
+
+    private void setAllTags(DirectedWeighted graph, int value) {
+        Iterator<NodeData> nodesIter = graph.nodeIter();
+        while (nodesIter.hasNext()) {
+            NodeData currentNode = nodesIter.next();
+            currentNode.setTag(value);
+        }
     }
 
     /**
      * this method calculates the shortest path between the two given vertices, using Dijkstra's algorithm.
      * in case at least one of the nodes does not exist in the graph, the method will return -1.
+     *
      * @param src  - start node
      * @param dest - end (target) node
      * @return
@@ -115,12 +155,13 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         }
         calculateShortestPath(src);
         double dist = mapDist.get(dest);
-        return (dist == INFINITY) ? -1.0 : dist;
+        return (dist == INFINITY) ? -1 : dist;
     }
 
     /**
      * this method returns a list of the shortest path between the two given vertices, using Dijkstra's algorithm.
      * in case at least one of the nodes does not exist in the graph, the method will return null.
+     *
      * @param src  - start node
      * @param dest - end (target) node
      * @return
@@ -148,30 +189,33 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
             path.add(toAdd);
             prevVertex = mapPrev.get(prevVertex);
         }
+        Collections.reverse(path);
         return path;
     }
 
     /**
      * this method return the vertex for which the distance from the farthest vertex from it is minimal.
+     *
      * @return
      */
     @Override
     public NodeData center() {
-        if (!isConnected()) {
-            return null;
-        }
         Iterator<NodeData> graphVerticesIter = graph.nodeIter();
-        NodeData currentVertex = graphVerticesIter.next();
-        int keyofCenter = currentVertex.getKey();
+        int keyofCenter = -1;
         double minMaxDist = INFINITY;
         while (graphVerticesIter.hasNext()) {
+            NodeData currentVertex = graphVerticesIter.next();
             calculateShortestPath(currentVertex.getKey());
             double maxValue = findMaxValue();
             if (maxValue < minMaxDist) {
                 minMaxDist = maxValue;
                 keyofCenter = currentVertex.getKey();
             }
-            currentVertex = graphVerticesIter.next();
+
+        }
+        if (keyofCenter == -1) {
+            NodeData first = getGraph().nodeIter().next();
+            return first;
         }
         NodeData centerVertex = this.graph.getNode(keyofCenter);
         return centerVertex;
@@ -179,11 +223,38 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
-        return null;
+        if (cities.size() == 1) {
+            return cities;
+        }
+        List<NodeData> toReturn = new ArrayList<>();
+        HashSet<Integer> unvisited = new HashSet<>();
+        initiateSetForTSP(cities, unvisited);
+        int currentVertex = cities.get(0).getKey();
+        while (unvisited.size() > 0) {
+            calculateShortestPath(currentVertex);
+            int nextVertex = findIdOfMinDistForTSP(unvisited);
+            List<NodeData> pathFromCurrentToNext = shortestPath(currentVertex, nextVertex);
+            if (pathFromCurrentToNext == null) {
+                unvisited.remove(currentVertex);
+                currentVertex = nextVertex;
+                continue;
+            }
+            for (NodeData vertex : pathFromCurrentToNext) {
+                int pathVertexId = vertex.getKey();
+                if (unvisited.contains(pathVertexId)) {
+                    unvisited.remove(pathVertexId);
+                }
+            }
+            toReturn.addAll(pathFromCurrentToNext);
+            unvisited.remove(currentVertex);
+            currentVertex = nextVertex;
+        }
+        return toReturn;
     }
 
     /**
      * this method saves the graph into the given json file.
+     *
      * @param file - the file name (may include a relative path).
      * @return
      */
@@ -204,8 +275,10 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     }
 
+
     /**
      * this method initates the graph from a given json file.
+     *
      * @param file - file name of JSON file
      * @return
      */
@@ -221,7 +294,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
             }
             myScanner.close();
             DirectedWeighted deserializedGraph = deserializeGraph(jsonFile);
-            this.graph = deserializedGraph;
+            init(deserializedGraph);
             return true;
 
         } catch (FileNotFoundException e) {
@@ -231,89 +304,42 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     }
 
-    /**
-     * this method implements the dfs algorithm to find which vertices are accessible from the given src.
-     * @param key
-     * @param visited
-     * @return
-     */
-    public boolean[] dfs(int key, boolean[] visited) {
-        Stack<Integer> stack = new Stack<>();
-        stack.push(key);
-        visited[key] = true;
-        while (!stack.isEmpty()) {
-            int currentVertex = stack.pop();
-            Iterator<EdgeData> currentVertexEdgesIterator = graph.edgeIter(currentVertex);
-            while (currentVertexEdgesIterator.hasNext()) {
-                EdgeData currentEdge = currentVertexEdgesIterator.next();
-                int edgeDest = currentEdge.getDest();
-                if (!visited[edgeDest]) {
-                    stack.push(edgeDest);
-                    visited[edgeDest] = true;
-                }
-            }
-        }
-        return visited;
-    }
 
     /**
      * this method calculates the shortest path from the given vertex to each of the graph's vertices.
+     *
      * @param src
      */
     public void calculateShortestPath(int src) {
+        NodeData source = graph.getNode(src);
+        mapDist.clear();
         mapPrev.clear();
-        HashSet<NodeData> unvisited = new HashSet<>();
-        initiateUnvisitedAndMapDist(unvisited);
-        mapDist.replace(src, 0.0);
+        initiateMapDist();
         mapPrev.put(src, -1);
-        while (!unvisited.isEmpty()) {
-            NodeData minDistNode = findMinDist(unvisited);
-            int keyOfMinDistNode = minDistNode.getKey();
-            double distOfCurrentKey = mapDist.get(keyOfMinDistNode);
-            Iterator<EdgeData> edgesLeavingFromCurrentKeyVertex = graph.edgeIter(keyOfMinDistNode);
-            while (edgesLeavingFromCurrentKeyVertex.hasNext()) {
-                EdgeData currentEdge = edgesLeavingFromCurrentKeyVertex.next();
-                int destVertexOfCurrentEdge = currentEdge.getDest();
-                double distOfCurrentEdge = currentEdge.getWeight();
-                double totalDist = distOfCurrentEdge + distOfCurrentKey;
-                double currentDestDistFromSrc = mapDist.get(destVertexOfCurrentEdge);
-                if (totalDist < currentDestDistFromSrc) {
-                    mapDist.put(destVertexOfCurrentEdge, totalDist);
-                    mapPrev.put(destVertexOfCurrentEdge, keyOfMinDistNode);
+        Queue<NodeData> queue = new LinkedList<>();
+        mapDist.put(src, 0.0);
+        queue.add(source);
+        while (!queue.isEmpty()) {
+            NodeData currentNode = queue.poll();
+            Iterator<EdgeData> currentNodeNeighbors = graph.edgeIter(currentNode.getKey());
+            while (currentNodeNeighbors.hasNext()) {
+                EdgeData currentEdge = currentNodeNeighbors.next();
+                NodeData destNode = graph.getNode(currentEdge.getDest());
+                double weight = currentEdge.getWeight();
+                double totalWeight = mapDist.get(currentNode.getKey()) + weight;
+                if (totalWeight < mapDist.get(destNode.getKey())) {
+                    mapDist.put(destNode.getKey(), totalWeight);
+                    mapPrev.put(destNode.getKey(), currentNode.getKey());
+                    queue.add(destNode);
                 }
-            }
-            unvisited.remove(minDistNode);
-        }
-        return;
-    }
 
-    /**
-     * this method returns the vertex with the current min dist from the src (src is in calculateMinDist func).
-     * @param unvisited
-     * @return
-     */
-    private NodeData findMinDist(HashSet<NodeData> unvisited) {
-        if (unvisited.size() == 0) {
-            return null;
-        }
-        Iterator<NodeData> unvisitedVerticesIter = unvisited.iterator();
-        double minDist = INFINITY;
-        NodeData currentVertex = unvisitedVerticesIter.next();
-        int keyOfMinVertex = currentVertex.getKey();
-        while (unvisitedVerticesIter.hasNext()) {
-            int currentKey = currentVertex.getKey();
-            double currentDist = mapDist.get(currentKey);
-            if (currentDist < minDist) {
-                minDist = currentKey;
-                keyOfMinVertex = currentKey;
             }
-            currentVertex = unvisitedVerticesIter.next();
         }
-        return graph.getNode(keyOfMinVertex);
     }
 
     /**
      * this method returns the max value of mapDist.
+     *
      * @return
      */
     private double findMaxValue() {
@@ -329,7 +355,34 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     }
 
     /**
+     * this method returns the index of the vertex with the min dist from src for TSP.
+     *
+     * @param unvisited
+     * @return
+     */
+    public int findIdOfMinDistForTSP(HashSet<Integer> unvisited) {
+        Iterator<Integer> unvisitedIter = unvisited.iterator();
+        int idOfMinValue = -1;
+        double minDist = INFINITY;
+        while (unvisitedIter.hasNext()) {
+            int currentVertexId = unvisitedIter.next();
+            double distToCurrentVertex = mapDist.get(currentVertexId);
+            if (distToCurrentVertex < minDist) {
+                minDist = distToCurrentVertex;
+                idOfMinValue = currentVertexId;
+            }
+        }
+        if (idOfMinValue == -1) {
+            Iterator<Integer> newIter = unvisited.iterator();
+            int idToReturn = newIter.next();
+            return idToReturn;
+        }
+        return idOfMinValue;
+    }
+
+    /**
      * this method serialize the graph into a json file.
+     *
      * @return
      */
     private GraphJson serializeGraph() {
@@ -349,6 +402,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     /**
      * this method deserialize the graph from a json file.
+     *
      * @param jsonFile
      * @return
      */
@@ -374,20 +428,52 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     }
 
     /**
-     * this method initiates unvisited nodes with al the graph's nodes and set mapDist values to be infinity.
-     * @param unvisited
+     * this method sets mapDist values to be infinity.
+     *
      * @return
      */
-    private HashSet<NodeData> initiateUnvisitedAndMapDist(HashSet<NodeData> unvisited){
+    void initiateMapDist() {
         Iterator<NodeData> nodeIter = graph.nodeIter();
         while (nodeIter.hasNext()) {
             NodeData currentVertex = nodeIter.next();
             int vertexId = currentVertex.getKey();
-            unvisited.add(currentVertex);
             mapDist.put(vertexId, INFINITY);
         }
-        return unvisited;
     }
+
+    /**
+     * this method initiates the set for TSP algorithm.
+     *
+     * @param nodeList
+     * @param unvisited
+     */
+    public void initiateSetForTSP(List<NodeData> nodeList, HashSet<Integer> unvisited) {
+        for (NodeData node : nodeList) {
+            int idOfCurrentVertex = node.getKey();
+            unvisited.add(idOfCurrentVertex);
+        }
+    }
+
+    /**
+     * this method returns an inverted graph of the class' graph.
+     *
+     * @return
+     */
+    public DirectedWeighted invertGraph() {
+        DirectedWeighted inverted = new DirectedWeightedClass();
+        Iterator<NodeData> nodesIter = getGraph().nodeIter();
+        Iterator<EdgeData> edgesIter = getGraph().edgeIter();
+        while (nodesIter.hasNext()) {
+            NodeData currentNode = nodesIter.next();
+            inverted.addNode(new NodeDataClass(currentNode));
+        }
+        while (edgesIter.hasNext()) {
+            EdgeData currentEdge = edgesIter.next();
+            inverted.connect(currentEdge.getDest(), currentEdge.getSrc(), currentEdge.getWeight());
+        }
+        return inverted;
+    }
+
 
 }
 

@@ -23,6 +23,17 @@ public class NodeDataClass implements NodeData {
 
     }
 
+    public NodeDataClass(NodeData other){
+        this.key = other.getKey();
+        double x = other.getLocation().x();
+        double y = other.getLocation().y();
+        double z = other.getLocation().z();
+        this.location = new GeoLocationClass(x,y,z);
+        this.weight = 0;
+        this.tag = 0;
+        this.info = "key: " + key + ", location: (" + x + ", " + y + ", " + z + "), weight: " + weight + ", tag: " + tag;
+    }
+
     /**
      * this method returns the vertex's key.
      * @return key
