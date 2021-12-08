@@ -16,20 +16,50 @@ public class Panel extends JPanel {
     List<NodeData>shortedP;
     boolean isCenter;
     NodeData center;
+    boolean isTsp;
+    List<NodeData>tspList;
+    boolean addNode;
+    boolean removeNode;
+
 
     public Panel(DirectedWeightedClass graph) {
         super();
         this.graph = graph;
         this.setSize(ScreenSize.width, ScreenSize.height);
-        this.setBackground(Color.PINK);
         this.nodesX=new int[this.graph.nodeSize()];
         this.nodesY=new int[this.graph.nodeSize()];
         this.shorted=false;
         this.isCenter=false;
+        this.isTsp=false;
+        this.addNode=false;
+        this.removeNode=false;
+
     }
 
-
+    @Override
+    protected void paintComponent(Graphics g) {
+        UpdateXY();
+        DrawNodes(g);
+        DrawEdges(g);
+        if (shorted){
+            DrawShortestPath(g,this.shortedP);
+        }
+        if (isCenter){
+            boldCenter(g,this.center);
+        }
+        if (isTsp){
+            tspDraw(g,this.tspList);
+        }
+    }
     private void UpdateXY(){
+        if (this.addNode=true){
+            this.nodesX=new int[this.graph.nodeSize()+1];
+            this.nodesY=new int[this.graph.nodeSize()+1];
+        }
+//        if (this.removeNode=true){
+//            this.nodesX=new int[this.graph.nodeSize()-1];
+//            this.nodesY=new int[this.graph.nodeSize()-1];
+//        }
         double minX=Double.MAX_VALUE, maxY=Double.MIN_VALUE,maxX=Double.MIN_VALUE, minY=Double.MAX_VALUE;
         Iterator<NodeData> iter=this.graph.nodeIter();
         while (iter.hasNext()) {
@@ -54,19 +84,6 @@ public class Panel extends JPanel {
             NodeData point = iter.next();
             this.nodesX[point.getKey()]= (int) ((point.getLocation().x()-minX)*X_par)+9;
             this.nodesY[point.getKey()]= (int) ((point.getLocation().y()-minY)*Y_par)+9;
-        }
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        UpdateXY();
-        DrawNodes(g);
-        DrawEdges(g);
-        if (shorted){
-            DrawShortestPath(g,this.shortedP);
-        }
-        if (isCenter){
-            boldCenter(g,this.center);
         }
     }
 
@@ -129,6 +146,23 @@ public class Panel extends JPanel {
         int key= center.getKey();
         String keyS=String.valueOf(key);
         g2d.drawString(keyS,x1-9,y1-9);
+    }
+
+    private void tspDraw(Graphics g, List<NodeData> tspNodes) {
+        Iterator<NodeData>iter=tspNodes.listIterator();
+        if (iter.hasNext()) {
+            NodeData p1 = iter.next();
+            while (iter.hasNext()) {
+                NodeData p2 = iter.next();
+                int x1 = this.nodesX[p1.getKey()];
+                int y1 = this.nodesY[p1.getKey()];
+                int x2 = this.nodesX[p2.getKey()];
+                int y2 = this.nodesY[p2.getKey()];
+                Arrow ar = new Arrow(x1, y1, x2, y2, Color.GREEN, 2);
+                ar.draw(g);
+                p1=p2;
+            }
+        }
     }
 }
 
