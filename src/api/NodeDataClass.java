@@ -1,7 +1,4 @@
-package api.graph;
-
-import api.GeoLocation;
-import api.NodeData;
+package api;
 
 public class NodeDataClass implements NodeData {
     private int key;

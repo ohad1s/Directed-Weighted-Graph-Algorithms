@@ -1,6 +1,6 @@
 package api.GUI;
 
-import api.graph.DirectedWeightedGraphAlgorithmsClass;
+import api.DirectedWeightedGraphAlgorithmsClass;
 import api.EdgeData;
 import api.NodeData;
 

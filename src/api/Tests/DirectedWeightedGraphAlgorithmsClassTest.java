@@ -1,9 +1,9 @@
 package api.Tests;
 
 import api.*;
-import api.graph.DirectedWeightedClass;
-import api.graph.DirectedWeightedGraphAlgorithmsClass;
-import api.graph.NodeDataClass;
+import api.DirectedWeightedClass;
+import api.DirectedWeightedGraphAlgorithmsClass;
+import api.NodeDataClass;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

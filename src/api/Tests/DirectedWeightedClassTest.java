@@ -1,8 +1,8 @@
 package api.Tests;
 
 import api.*;
-import api.graph.DirectedWeightedClass;
-import api.graph.NodeDataClass;
+import api.DirectedWeightedClass;
+import api.NodeDataClass;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;

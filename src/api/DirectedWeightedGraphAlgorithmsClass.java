@@ -1,10 +1,6 @@
-package api.graph;
+package api;
 
 
-import api.DirectedWeighted;
-import api.DirectedWeightedGraphAlgorithms;
-import api.EdgeData;
-import api.NodeData;
 import api.json.EdgeForJson;
 import api.json.GraphJson;
 import api.json.NodeForJson;

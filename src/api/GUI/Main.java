@@ -1,6 +1,6 @@
 package api.GUI;
 
-import api.graph.DirectedWeightedGraphAlgorithmsClass;
+import api.DirectedWeightedGraphAlgorithmsClass;
 
 public class Main {
     public static void main(String[]args){

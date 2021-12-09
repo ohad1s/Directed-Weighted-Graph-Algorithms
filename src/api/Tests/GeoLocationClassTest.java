@@ -1,7 +1,7 @@
 package api.Tests;
 
 import api.GeoLocation;
-import api.graph.GeoLocationClass;
+import api.GeoLocationClass;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
