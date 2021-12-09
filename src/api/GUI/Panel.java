@@ -38,7 +38,7 @@ public class Panel extends JPanel {
 
     /**
      * this method is Override of paintComponent of JPanel
-     * this method draws the graph on
+     * this method draws the graph on the graphWindow
      * @param g
      */
     @Override
@@ -56,6 +56,10 @@ public class Panel extends JPanel {
         }
     }
 
+    /**
+     * this method draws the nodes of the graph on the graphWindow
+     * @param g
+     */
     private void DrawNodes(Graphics g) {
         Iterator<NodeData> iter1=this.graph.nodeIter();
         while (iter1.hasNext()) {
@@ -89,6 +93,10 @@ public class Panel extends JPanel {
         }
     }
 
+    /**
+     ** this method draws the edges of the graph on the graphWindow
+     * @param g
+     */
     private void DrawEdges(Graphics g) {
         Iterator<EdgeData>iter=this.graph.edgeIter();
         while (iter.hasNext()) {
@@ -104,6 +112,11 @@ public class Panel extends JPanel {
         }
     }
 
+    /**
+     * this method emphasize the shortest path between 2 nodes of the graph on the graphWindow
+     * @param g
+     * @param Shortest
+     */
     private void DrawShortestPath(Graphics g, List<NodeData> Shortest){
         Iterator<NodeData>iter=Shortest.listIterator();
         if (iter.hasNext()) {
@@ -121,6 +134,11 @@ public class Panel extends JPanel {
         }
     }
 
+    /**
+     * this method emphasize the center node of the graph on the graphWindow
+     * @param g
+     * @param center
+     */
     private void boldCenter(Graphics g, NodeData center) {
         int x1=(int) ((center.getLocation().x()-this.minX)*this.X_par);
         int y1=(int) ((center.getLocation().y()-this.minY)*this.Y_par);
@@ -134,6 +152,11 @@ public class Panel extends JPanel {
         g2d.drawString(keyS,x1,y1);
     }
 
+    /**
+     * this method emphasize the shortest path between a group of nodes (cities) of the graph on the graphWindow
+     * @param g
+     * @param tspNodes
+     */
     private void tspDraw(Graphics g, List<NodeData> tspNodes) {
         Iterator<NodeData>iter=tspNodes.listIterator();
         if (iter.hasNext()) {
