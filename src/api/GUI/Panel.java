@@ -1,14 +1,11 @@
 package api.GUI;
 
-import api.DirectedWeightedGraphAlgorithmsClass;
+import api.graph.DirectedWeightedGraphAlgorithmsClass;
 import api.EdgeData;
 import api.NodeData;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.util.LinkedList;
 
 public class Panel extends JPanel {
     DirectedWeightedGraphAlgorithmsClass graph;

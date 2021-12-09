@@ -1,13 +1,6 @@
 package api.GUI;
 
-import api.DirectedWeightedClass;
-import api.DirectedWeightedGraphAlgorithmsClass;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.util.LinkedList;
+import api.graph.DirectedWeightedGraphAlgorithmsClass;
 
 public class Main {
     public static void main(String[]args){

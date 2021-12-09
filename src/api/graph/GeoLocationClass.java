@@ -1,4 +1,6 @@
-package api;
+package api.graph;
+
+import api.GeoLocation;
 
 public class GeoLocationClass implements GeoLocation {
     private double x;

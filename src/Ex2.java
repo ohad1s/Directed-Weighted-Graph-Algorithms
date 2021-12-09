@@ -1,6 +1,6 @@
 import api.DirectedWeighted;
 import api.DirectedWeightedGraphAlgorithms;
-import api.DirectedWeightedGraphAlgorithmsClass;
+import api.graph.DirectedWeightedGraphAlgorithmsClass;
 
 /**
  * This class is the main class for Ex2 - your implementation will be tested using this class.

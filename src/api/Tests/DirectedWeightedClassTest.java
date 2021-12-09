@@ -1,10 +1,10 @@
 package api.Tests;
 
 import api.*;
+import api.graph.DirectedWeightedClass;
+import api.graph.NodeDataClass;
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Node;
 
-import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;

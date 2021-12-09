@@ -1,13 +1,12 @@
 package api.GUI;
 
-import api.DirectedWeightedGraphAlgorithmsClass;
+import api.graph.DirectedWeightedGraphAlgorithmsClass;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 
 
 public class graphWindow extends JFrame implements ActionListener {
