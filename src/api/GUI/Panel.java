@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Panel extends JPanel {
-    DirectedWeightedClass graph;
+    DirectedWeighted graph;
     final Dimension ScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
     boolean shorted;
     List<NodeData>shortedP;
@@ -18,8 +18,10 @@ public class Panel extends JPanel {
     double X_par, Y_par;
 
 
-
-    public Panel(DirectedWeightedClass graph) {
+    /**
+     * this method is the constructor of Panel
+     */
+    public Panel(DirectedWeighted graph) {
         super();
         this.graph = graph;
         this.setSize(ScreenSize.width, ScreenSize.height);
@@ -34,6 +36,11 @@ public class Panel extends JPanel {
         this.Y_par=0;
     }
 
+    /**
+     * this method is Override of paintComponent of JPanel
+     * this method draws the graph on
+     * @param g
+     */
     @Override
     protected void paintComponent(Graphics g) {
         DrawNodes(g);

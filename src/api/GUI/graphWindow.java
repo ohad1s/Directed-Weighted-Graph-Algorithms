@@ -1,19 +1,17 @@
 package api.GUI;
 
 import api.*;
-import org.w3c.dom.Node;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 
 public class graphWindow extends JFrame implements ActionListener {
-    DirectedWeightedGraphAlgorithmsClass graph;
+    DirectedWeightedGraphAlgorithms graph;
     Panel panel;
     final Dimension ScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
     MenuBar menuBar;
@@ -22,11 +20,13 @@ public class graphWindow extends JFrame implements ActionListener {
     MenuItem i1, i3, i4, i5;
     MenuItem remE, con,addN,remN;
 
-
-    public graphWindow(DirectedWeightedGraphAlgorithmsClass graph) {
+    /**
+     * this method is the constructor of graphWindow
+     */
+    public graphWindow(DirectedWeightedGraphAlgorithms graph) {
         super();
         this.graph=graph;
-        this.panel = new Panel((DirectedWeightedClass) this.graph.getGraph());
+        this.panel = new Panel(this.graph.getGraph());
         this.menuBar = new MenuBar();
         this.menu = new Menu("Menu");
         this.load = new MenuItem("load");
@@ -74,6 +74,12 @@ public class graphWindow extends JFrame implements ActionListener {
 
     }
 
+    /**
+     * this method checks which button from the menu is selected,
+     * and activates its function on the graph according to the button
+     * @param e
+     * @throws HeadlessException
+     */
     @Override
     public void actionPerformed(ActionEvent e) throws HeadlessException{
         if (e.getSource() == this.save) {
