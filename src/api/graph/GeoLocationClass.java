@@ -1,4 +1,4 @@
-package api;
+package api.graph;
 
 import api.GeoLocation;
 

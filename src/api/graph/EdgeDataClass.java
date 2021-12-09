@@ -1,4 +1,4 @@
-package api;
+package api.graph;
 import api.EdgeData;
 public class EdgeDataClass implements EdgeData {
     private int src;
