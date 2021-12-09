@@ -80,7 +80,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     }
 
     /**
-     * this method returns a boolean value whether the graph is connected ot not.
+     * this method returns a boolean value whether the graph is connected or not.
      *
      * @return
      */
@@ -93,6 +93,12 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return isConnected(graph, graphFirstNode) && isConnected(invertedGraph, graphFirstNode);
     }
 
+    /**
+     * this method returns a boolean value whether the given graph is strongly connected or not.
+     * @param g
+     * @param nodeFirst
+     * @return
+     */
     private boolean isConnected(DirectedWeighted g, NodeData nodeFirst) {
         setAllTags(g, NOT_VISITED);
         BFS(nodeFirst, g);
@@ -106,6 +112,11 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return true;
     }
 
+    /**
+     * this method is a BFS algorithm.
+     * @param node
+     * @param g
+     */
     private void BFS(NodeData node, DirectedWeighted g) {
         NodeData firstNode = node;
         Queue<NodeData> queue = new LinkedList<>();
@@ -218,6 +229,11 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return centerVertex;
     }
 
+    /**
+     * this method returns the shortest path that goes through all the given vertices.
+     * @param cities - list of vertices
+     * @return
+     */
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
         if (cities.size() == 1) {
@@ -226,25 +242,32 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         List<NodeData> toReturn = new ArrayList<>();
         HashSet<Integer> unvisited = new HashSet<>();
         initiateSetForTSP(cities, unvisited);
-        int currentVertex = cities.get(0).getKey();
-        while (unvisited.size() > 0) {
-            calculateShortestPath(currentVertex);
-            int nextVertex = findIdOfMinDistForTSP(unvisited);
-            List<NodeData> pathFromCurrentToNext = shortestPath(currentVertex, nextVertex);
-            if (pathFromCurrentToNext == null) {
-                unvisited.remove(currentVertex);
-                currentVertex = nextVertex;
-                continue;
-            }
-            for (NodeData vertex : pathFromCurrentToNext) {
-                int pathVertexId = vertex.getKey();
-                if (unvisited.contains(pathVertexId)) {
-                    unvisited.remove(pathVertexId);
+        return tsp(unvisited, cities.get(0));
+    }
+
+    /**
+     * this method is a greedy algorithm to find the shortest path between al cities.
+     * @param unvisited
+     * @param first
+     * @return
+     */
+    public List<NodeData> tsp(HashSet<Integer> unvisited, NodeData first){
+        List<NodeData> toReturn = new ArrayList<>();
+        NodeData currentNode = first;
+        while (unvisited.size() > 0){
+            unvisited.remove(currentNode.getKey());
+            int nextNodeId = findIdOfMinDistForTSP(unvisited, currentNode.getKey());
+            List<NodeData> pathFromCurrentToNext = shortestPath(currentNode.getKey(), nextNodeId);
+            for (NodeData node : pathFromCurrentToNext){
+                int pathNodeID = node.getKey();
+                if(unvisited.contains(pathNodeID)){
+                    unvisited.remove(pathNodeID);
                 }
             }
-            toReturn.addAll(pathFromCurrentToNext);
-            unvisited.remove(currentVertex);
-            currentVertex = nextVertex;
+            for (int i = 1; i < pathFromCurrentToNext.size(); i++) {
+                toReturn.add(pathFromCurrentToNext.get(i));
+            }
+            currentNode = graph.getNode(nextNodeId);
         }
         return toReturn;
     }
@@ -353,14 +376,15 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
      * @param unvisited
      * @return
      */
-    public int findIdOfMinDistForTSP(HashSet<Integer> unvisited) {
+    public int findIdOfMinDistForTSP(HashSet<Integer> unvisited, int currentNodeID) {
         Iterator<Integer> unvisitedIter = unvisited.iterator();
+        calculateShortestPath(currentNodeID);
         int idOfMinValue = -1;
         double minDist = INFINITY;
         while (unvisitedIter.hasNext()) {
             int currentVertexId = unvisitedIter.next();
             double distToCurrentVertex = mapDist.get(currentVertexId);
-            if (distToCurrentVertex < minDist) {
+            if (distToCurrentVertex < minDist && currentVertexId != currentNodeID) {
                 minDist = distToCurrentVertex;
                 idOfMinValue = currentVertexId;
             }
