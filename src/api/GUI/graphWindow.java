@@ -1,6 +1,9 @@
 package api.GUI;
 
 import api.*;
+import api.graph.DirectedWeightedClass;
+import api.graph.NodeDataClass;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

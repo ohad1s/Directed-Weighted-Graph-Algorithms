@@ -1,6 +1,6 @@
 import api.DirectedWeighted;
 import api.DirectedWeightedGraphAlgorithms;
-import api.DirectedWeightedGraphAlgorithmsClass;
+import api.graph.DirectedWeightedGraphAlgorithmsClass;
 import api.GUI.graphWindow;
 
 /**

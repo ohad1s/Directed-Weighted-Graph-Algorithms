@@ -1,7 +1,7 @@
 package api.Tests;
 
 import api.EdgeData;
-import api.EdgeDataClass;
+import api.graph.EdgeDataClass;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
