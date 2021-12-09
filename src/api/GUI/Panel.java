@@ -1,7 +1,5 @@
 package api.GUI;
-
 import api.*;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.Iterator;
@@ -10,35 +8,34 @@ import java.util.List;
 public class Panel extends JPanel {
     DirectedWeightedClass graph;
     final Dimension ScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    int[]nodesX;
-    int[]nodesY;
     boolean shorted;
     List<NodeData>shortedP;
     boolean isCenter;
     NodeData center;
     boolean isTsp;
     List<NodeData>tspList;
-    boolean addNode;
-    boolean removeNode;
+    double minX,minY,maxX,maxY;
+    double X_par, Y_par;
+
 
 
     public Panel(DirectedWeightedClass graph) {
         super();
         this.graph = graph;
         this.setSize(ScreenSize.width, ScreenSize.height);
-        this.nodesX=new int[this.graph.nodeSize()];
-        this.nodesY=new int[this.graph.nodeSize()];
         this.shorted=false;
         this.isCenter=false;
         this.isTsp=false;
-        this.addNode=false;
-        this.removeNode=false;
-
+        this.minX=Double.MAX_VALUE;
+        this.maxY=Double.MIN_VALUE;
+        this.maxX=Double.MIN_VALUE;
+        this.minY=Double.MAX_VALUE;
+        this.X_par=0;
+        this.Y_par=0;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        UpdateXY();
         DrawNodes(g);
         DrawEdges(g);
         if (shorted){
@@ -51,55 +48,37 @@ public class Panel extends JPanel {
             tspDraw(g,this.tspList);
         }
     }
-    private void UpdateXY(){
-        if (this.addNode=true){
-            this.nodesX=new int[this.graph.nodeSize()+1];
-            this.nodesY=new int[this.graph.nodeSize()+1];
-        }
-//        if (this.removeNode=true){
-//            this.nodesX=new int[this.graph.nodeSize()-1];
-//            this.nodesY=new int[this.graph.nodeSize()-1];
-//        }
-        double minX=Double.MAX_VALUE, maxY=Double.MIN_VALUE,maxX=Double.MIN_VALUE, minY=Double.MAX_VALUE;
-        Iterator<NodeData> iter=this.graph.nodeIter();
-        while (iter.hasNext()) {
-            NodeData point =iter.next();
-            if (point.getLocation().x()>maxX){
-                maxX=point.getLocation().x();
-            }
-            if (point.getLocation().y()<minY){
-                minY=point.getLocation().y();
-            }
-            if (point.getLocation().x()<minX){
-                minX=point.getLocation().x();
-            }
-            if (point.getLocation().y()>maxY){
-                maxY=point.getLocation().y();
-            }
-        }
-        double X_par=(ScreenSize.width)/(maxX-minX)*0.9;
-        double Y_par=(ScreenSize.height)/(maxY-minY)*0.8;
-        iter=this.graph.nodeIter();
-        while (iter.hasNext()) {
-            NodeData point = iter.next();
-            this.nodesX[point.getKey()]= (int) ((point.getLocation().x()-minX)*X_par)+9;
-            this.nodesY[point.getKey()]= (int) ((point.getLocation().y()-minY)*Y_par)+9;
-        }
-    }
 
     private void DrawNodes(Graphics g) {
+        Iterator<NodeData> iter1=this.graph.nodeIter();
+        while (iter1.hasNext()) {
+            NodeData point =iter1.next();
+            if (point.getLocation().x()>this.maxX){
+                this.maxX=point.getLocation().x();
+            }
+            if (point.getLocation().y()<this.minY){
+                this.minY=point.getLocation().y();
+            }
+            if (point.getLocation().x()<this.minX){
+                this.minX=point.getLocation().x();
+            }
+            if (point.getLocation().y()>this.maxY){
+                this.maxY=point.getLocation().y();
+            }
+        }
+        this.X_par=(ScreenSize.width)/(maxX-minX)*0.9;
+        this.Y_par=(ScreenSize.height)/(maxY-minY)*0.8;
         Iterator<NodeData>iter=this.graph.nodeIter();
         while (iter.hasNext()) {
             NodeData point = iter.next();
             g.setColor(Color.BLACK);
-            g.fillOval(this.nodesX[point.getKey()]-9,this.nodesY[point.getKey()]-9,18,18);
-//            g.drawString(point.getLocation().toString(),this.nodesX[point.getKey()]+1,this.nodesY[point.getKey()]+1);
+            g.fillOval((int) ((point.getLocation().x()-this.minX)*this.X_par),(int) ((point.getLocation().y()-this.minY)*this.Y_par),18,18);
             Graphics2D g2d=(Graphics2D)g;
             g2d.setColor(Color.RED);
             g2d.setStroke(new BasicStroke(12));
             int key= point.getKey();
             String keyS=String.valueOf(key);
-            g2d.drawString(keyS,this.nodesX[point.getKey()]-9,this.nodesY[point.getKey()]-9);
+            g2d.drawString(keyS,(int) ((point.getLocation().x()-this.minX)*this.X_par),(int) ((point.getLocation().y()-this.minY)*this.Y_par));
         }
     }
 
@@ -109,11 +88,11 @@ public class Panel extends JPanel {
             EdgeData arrow = iter.next();
             NodeData p1=this.graph.getNode(arrow.getSrc());
             NodeData p2=this.graph.getNode(arrow.getDest());
-            int x1=this.nodesX[arrow.getSrc()];
-            int y1=this.nodesY[arrow.getSrc()];
-            int x2=this.nodesX[arrow.getDest()];
-            int y2=this.nodesY[arrow.getDest()];
-            Arrow ar=new Arrow(x1,y1,x2,y2,Color.BLUE,1);
+            int x1=(int) ((p1.getLocation().x()-this.minX)*this.X_par);
+            int y1=(int) ((p1.getLocation().y()-this.minY)*this.Y_par);
+            int x2=(int) ((p2.getLocation().x()-this.minX)*this.X_par);
+            int y2=(int) ((p2.getLocation().y()-this.minY)*this.Y_par);
+            Arrow ar=new Arrow(x1+9,y1+9,x2+9,y2+9,Color.BLUE,1);
             ar.draw(g);
         }
     }
@@ -124,11 +103,11 @@ public class Panel extends JPanel {
             NodeData p1 = iter.next();
             while (iter.hasNext()) {
                 NodeData p2 = iter.next();
-                int x1 = this.nodesX[p1.getKey()];
-                int y1 = this.nodesY[p1.getKey()];
-                int x2 = this.nodesX[p2.getKey()];
-                int y2 = this.nodesY[p2.getKey()];
-                Arrow ar = new Arrow(x1, y1, x2, y2, Color.GREEN, 2);
+                int x1=(int) ((p1.getLocation().x()-this.minX)*this.X_par);
+                int y1=(int) ((p1.getLocation().y()-this.minY)*this.Y_par);
+                int x2=(int) ((p2.getLocation().x()-this.minX)*this.X_par);
+                int y2=(int) ((p2.getLocation().y()-this.minY)*this.Y_par);
+                Arrow ar = new Arrow(x1+9, y1+9, x2+9, y2+9, Color.GREEN, 2);
                 ar.draw(g);
                 p1=p2;
             }
@@ -136,16 +115,16 @@ public class Panel extends JPanel {
     }
 
     private void boldCenter(Graphics g, NodeData center) {
-        int x1 = this.nodesX[center.getKey()];
-        int y1 = this.nodesY[center.getKey()];
+        int x1=(int) ((center.getLocation().x()-this.minX)*this.X_par);
+        int y1=(int) ((center.getLocation().y()-this.minY)*this.Y_par);
         g.setColor(Color.MAGENTA);
-        g.fillOval(x1-9,y1-9,18,18);
+        g.fillOval(x1,y1,18,18);
         Graphics2D g2d=(Graphics2D)g;
         g2d.setColor(Color.RED);
         g2d.setStroke(new BasicStroke(12));
         int key= center.getKey();
         String keyS=String.valueOf(key);
-        g2d.drawString(keyS,x1-9,y1-9);
+        g2d.drawString(keyS,x1,y1);
     }
 
     private void tspDraw(Graphics g, List<NodeData> tspNodes) {
@@ -154,11 +133,11 @@ public class Panel extends JPanel {
             NodeData p1 = iter.next();
             while (iter.hasNext()) {
                 NodeData p2 = iter.next();
-                int x1 = this.nodesX[p1.getKey()];
-                int y1 = this.nodesY[p1.getKey()];
-                int x2 = this.nodesX[p2.getKey()];
-                int y2 = this.nodesY[p2.getKey()];
-                Arrow ar = new Arrow(x1, y1, x2, y2, Color.GREEN, 2);
+                int x1=(int) ((p1.getLocation().x()-this.minX)*this.X_par);
+                int y1=(int) ((p1.getLocation().y()-this.minY)*this.Y_par);
+                int x2=(int) ((p2.getLocation().x()-this.minX)*this.X_par);
+                int y2=(int) ((p2.getLocation().y()-this.minY)*this.Y_par);
+                Arrow ar = new Arrow(x1+9, y1+9, x2+9, y2+9, Color.GREEN, 2);
                 ar.draw(g);
                 p1=p2;
             }

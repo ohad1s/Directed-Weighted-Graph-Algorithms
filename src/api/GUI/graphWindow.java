@@ -195,15 +195,14 @@ public class graphWindow extends JFrame implements ActionListener {
         else if (e.getSource() == this.addN) {
             String NodesToAdd;
             NodesToAdd = JOptionPane.showInputDialog(this.panel, "Enter location (x,y) to add\n (Example: 1,5)");
-            String[] MyNodes = NodesToAdd.split(",");
             try {
+            String[] MyNodes = NodesToAdd.split(",");
                 double x1 = Double.valueOf(MyNodes[0]);
                 double y1 = Double.valueOf(MyNodes[1]);
                 NodeData addMe = new NodeDataClass(this.graph.getGraph().nodeSize(), x1, y1, 0);
                 this.graph.getGraph().addNode(addMe);
                 this.remove(this.panel);
                 this.panel = new Panel((DirectedWeightedClass) this.graph.getGraph());
-                this.panel.addNode=true;
                 this.add(this.panel);
                 this.repaint();
                 this.revalidate();
@@ -245,7 +244,6 @@ public class graphWindow extends JFrame implements ActionListener {
                 this.graph.getGraph().removeNode(key);
                 this.remove(this.panel);
                 this.panel = new Panel((DirectedWeightedClass) this.graph.getGraph());
-                this.panel.addNode=true;
                 this.add(this.panel);
                 this.repaint();
                 this.revalidate();
@@ -260,8 +258,8 @@ public class graphWindow extends JFrame implements ActionListener {
         else if (e.getSource() == this.remE){
             String NodesToRem;
             NodesToRem = JOptionPane.showInputDialog(this.panel, "Enter src and dst in order to remove the edge\n (Example: 5,8)");
-            String[] MyNodes = NodesToRem.split(",");
             try {
+            String[] MyNodes = NodesToRem.split(",");
                 int p1 = Integer.valueOf(MyNodes[0]);
                 int p2 = Integer.valueOf(MyNodes[1]);
                 this.graph.getGraph().removeEdge(p1,p2);
