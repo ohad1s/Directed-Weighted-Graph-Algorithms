@@ -7,10 +7,7 @@ import api.json.NodeForJson;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGraphAlgorithms {
@@ -261,10 +258,10 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     @Override
     public boolean save(String file) {
         GraphJson serializedGraph = serializeGraph();
+        GsonBuilder json = new GsonBuilder();
+        String toWrite = json.setPrettyPrinting().create().toJson(serializedGraph);
         try {
             FileWriter myFile = new FileWriter(file);
-            GsonBuilder json = new GsonBuilder();
-            String toWrite = json.setPrettyPrinting().create().toJson(serializedGraph);
             myFile.write(toWrite);
             myFile.close();
             return true;
@@ -285,16 +282,12 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     @Override
     public boolean load(String file) {
         try {
-            FileReader fileReader = new FileReader(file);
-            String jsonFile = "";
-            Scanner myScanner = new Scanner(fileReader);
-            while (myScanner.hasNextLine()) {
-                String lineToAdd = myScanner.nextLine();
-                jsonFile += lineToAdd;
-            }
-            myScanner.close();
-            DirectedWeighted deserializedGraph = deserializeGraph(jsonFile);
-            init(deserializedGraph);
+            Gson json = new Gson();
+            FileReader FR = new FileReader(file);
+            BufferedReader BR = new BufferedReader(FR);
+            GraphJson graphFromJson = json.fromJson(BR, GraphJson.class);
+            DirectedWeighted graph = deserializeGraph(graphFromJson);
+            init(graph);
             return true;
 
         } catch (FileNotFoundException e) {
@@ -403,12 +396,11 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     /**
      * this method deserialize the graph from a json file.
      *
-     * @param jsonFile
+     * @param fromJson
      * @return
      */
-    private DirectedWeighted deserializeGraph(String jsonFile) {
+    private DirectedWeighted deserializeGraph(GraphJson fromJson) {
         DirectedWeighted loadedGraph = new DirectedWeightedClass();
-        GraphJson fromJson = new Gson().fromJson(jsonFile, GraphJson.class);
         for (NodeForJson node : fromJson.Nodes) {
             String[] location = node.pos.split(",");
             double x = Double.parseDouble(location[0]);

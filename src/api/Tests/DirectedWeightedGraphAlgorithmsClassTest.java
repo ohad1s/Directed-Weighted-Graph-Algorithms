@@ -3,7 +3,6 @@ package api.Tests;
 import api.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,6 +12,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DirectedWeightedGraphAlgorithmsClassTest {
     DirectedWeightedGraphAlgorithms graphAlgoTest = new DirectedWeightedGraphAlgorithmsClass();
+    DirectedWeightedGraphAlgorithms thousandNodes = loadGraph(new DirectedWeightedGraphAlgorithmsClass(), "/home/itamarq/OOP_2021/Assignments/Ex2_OOP/out/LargeConnectedGraphs/1000Nodes.json");
+    DirectedWeightedGraphAlgorithms tenThousandNodes = loadGraph(new DirectedWeightedGraphAlgorithmsClass(), "/home/itamarq/OOP_2021/Assignments/Ex2_OOP/out/LargeConnectedGraphs/10000Nodes.json");
+    DirectedWeightedGraphAlgorithms oneHundredThousandNodes = loadGraph(new DirectedWeightedGraphAlgorithmsClass(), "/home/itamarq/OOP_2021/Assignments/Ex2_OOP/out/LargeConnectedGraphs/100000.json");
     static DirectedWeighted g1 = new DirectedWeightedClass();
     static DirectedWeighted g2 = new DirectedWeightedClass();
     static DirectedWeighted g3 = new DirectedWeightedClass();
@@ -79,6 +81,7 @@ class DirectedWeightedGraphAlgorithmsClassTest {
         g5.connect(0, 1, 5);
         g5.connect(1, 2, 5);
         g5.connect(2, 0, 5);
+
     }
 
     @Test
@@ -141,9 +144,9 @@ class DirectedWeightedGraphAlgorithmsClassTest {
         System.out.println("g5 = " + graphAlgoTest.isConnected());
         assertTrue(graphAlgoTest.isConnected());
 
-        DirectedWeightedGraphAlgorithms toTest = new DirectedWeightedGraphAlgorithmsClass();
-        toTest.load("/home/itamarq/OOP_2021/Assignments/Ex2_OOP/data/LargeConnectedGraphs/1000Nodes.json");
-        assertTrue(toTest.isConnected());
+        assertTrue(thousandNodes.isConnected());
+        assertTrue(tenThousandNodes.isConnected());
+        assertTrue(oneHundredThousandNodes.isConnected());
 
     }
 
@@ -190,6 +193,9 @@ class DirectedWeightedGraphAlgorithmsClassTest {
         assertEquals(0, graphAlgoTest.center().getKey());
         graphAlgoTest.load("/home/itamarq/OOP_2021/Assignments/Ex2_OOP/data/G3.json");
         assertEquals(40, graphAlgoTest.center().getKey());
+        System.out.println(thousandNodes.center().getInfo());
+        System.out.println(tenThousandNodes.center().getInfo());
+        System.out.println(oneHundredThousandNodes.center().getInfo());
 
     }
 
@@ -210,12 +216,20 @@ class DirectedWeightedGraphAlgorithmsClassTest {
             System.out.println(vertex.getInfo());
         }
     }
+    @Test
+    void testCase3(){
+        graphAlgoTest.load("/home/itamarq/OOP_2021/Assignments/Ex2_OOP/data/G3.json");
+        List<NodeData> listToTest = graphAlgoTest.shortestPath(3, 47);
+        for(NodeData node : listToTest){
+            System.out.println(node.getInfo());
+        }
+    }
 
     @Test
     void load_save() {
         DirectedWeightedGraphAlgorithms test2 = new DirectedWeightedGraphAlgorithmsClass();
-        String fileNameLoad = "/home/itamarq/OOP_2021/Assignments/Ex2_OOP/data/G3.json";
-        String fileNameSave = "/home/itamarq/OOP_2021/Assignments/Ex2_OOP/data/LargeConnectedGraphs/G3Test.json";
+        String fileNameLoad = "/home/itamarq/OOP_2021/Assignments/Ex2_OOP/out/LargeConnectedGraphs/10000Nodes.json";
+        String fileNameSave = "/home/itamarq/OOP_2021/Assignments/Ex2_OOP/out/LargeConnectedGraphs/10000Test.json";
         assertTrue(graphAlgoTest.load(fileNameLoad));
         assertTrue(graphAlgoTest.save(fileNameSave));
         test2.load(fileNameSave);
@@ -239,10 +253,16 @@ class DirectedWeightedGraphAlgorithmsClassTest {
     }
 
 
+
     static void createGraph(int size, DirectedWeighted g) {
         for (int i = 0; i < size; i++) {
             NodeData toAdd = new NodeDataClass(i, i, i, i);
             g.addNode(toAdd);
         }
+    }
+
+    static DirectedWeightedGraphAlgorithms loadGraph(DirectedWeightedGraphAlgorithms graph, String file){
+        graph.load(file);
+        return graph;
     }
 }
