@@ -5,7 +5,6 @@ import api.GeoLocationClass;
 import api.NodeData;
 import api.NodeDataClass;
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Node;
 
 import static org.junit.jupiter.api.Assertions.*;
 

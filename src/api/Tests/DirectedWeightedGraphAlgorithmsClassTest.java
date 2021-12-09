@@ -1,6 +1,9 @@
 package api.Tests;
 
 import api.*;
+import api.DirectedWeightedClass;
+import api.DirectedWeightedGraphAlgorithmsClass;
+import api.NodeDataClass;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -12,9 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DirectedWeightedGraphAlgorithmsClassTest {
     DirectedWeightedGraphAlgorithms graphAlgoTest = new DirectedWeightedGraphAlgorithmsClass();
-    DirectedWeightedGraphAlgorithms thousandNodes = loadGraph(new DirectedWeightedGraphAlgorithmsClass(), "/home/itamarq/OOP_2021/Assignments/Ex2_OOP/out/LargeConnectedGraphs/1000Nodes.json");
-    DirectedWeightedGraphAlgorithms tenThousandNodes = loadGraph(new DirectedWeightedGraphAlgorithmsClass(), "/home/itamarq/OOP_2021/Assignments/Ex2_OOP/out/LargeConnectedGraphs/10000Nodes.json");
-    DirectedWeightedGraphAlgorithms oneHundredThousandNodes = loadGraph(new DirectedWeightedGraphAlgorithmsClass(), "/home/itamarq/OOP_2021/Assignments/Ex2_OOP/out/LargeConnectedGraphs/100000.json");
     static DirectedWeighted g1 = new DirectedWeightedClass();
     static DirectedWeighted g2 = new DirectedWeightedClass();
     static DirectedWeighted g3 = new DirectedWeightedClass();
@@ -144,9 +144,6 @@ class DirectedWeightedGraphAlgorithmsClassTest {
         System.out.println("g5 = " + graphAlgoTest.isConnected());
         assertTrue(graphAlgoTest.isConnected());
 
-        assertTrue(thousandNodes.isConnected());
-        assertTrue(tenThousandNodes.isConnected());
-        assertTrue(oneHundredThousandNodes.isConnected());
 
     }
 
@@ -187,22 +184,20 @@ class DirectedWeightedGraphAlgorithmsClassTest {
 
     @Test
     void center() {
-        graphAlgoTest.load("/home/itamarq/OOP_2021/Assignments/Ex2_OOP/data/G1.json");
+        graphAlgoTest.load("./data/G1.json");
         assertEquals(8, graphAlgoTest.center().getKey());
-        graphAlgoTest.load("/home/itamarq/OOP_2021/Assignments/Ex2_OOP/data/G2.json");
+        graphAlgoTest.load("./data/G2.json");
         assertEquals(0, graphAlgoTest.center().getKey());
-        graphAlgoTest.load("/home/itamarq/OOP_2021/Assignments/Ex2_OOP/data/G3.json");
+        graphAlgoTest.load("./data/G3.json");
         assertEquals(40, graphAlgoTest.center().getKey());
-        System.out.println(thousandNodes.center().getInfo());
-        System.out.println(tenThousandNodes.center().getInfo());
-        System.out.println(oneHundredThousandNodes.center().getInfo());
+
 
     }
 
     @Test
     void tsp() {
         DirectedWeightedGraphAlgorithms toTest = new DirectedWeightedGraphAlgorithmsClass();
-        toTest.load("/home/itamarq/OOP_2021/Assignments/Ex2_OOP/data/G3");
+        toTest.load("./data/G1.json");
         List<NodeData> path = new ArrayList<>();
         Iterator<NodeData> verticesIter = toTest.getGraph().nodeIter();
         while (verticesIter.hasNext()){
@@ -210,7 +205,7 @@ class DirectedWeightedGraphAlgorithmsClassTest {
             path.add(currentVertex);
         }
         List<NodeData> shortestPathAroundTheGraph = toTest.tsp(path);
-//        System.out.println(shortestPathAroundTheGraph.toString());
+        System.out.println(shortestPathAroundTheGraph.toString());
         System.out.println(shortestPathAroundTheGraph.size());
         for (NodeData vertex : shortestPathAroundTheGraph){
             System.out.println(vertex.getInfo());
@@ -218,7 +213,7 @@ class DirectedWeightedGraphAlgorithmsClassTest {
     }
     @Test
     void testCase3(){
-        graphAlgoTest.load("/home/itamarq/OOP_2021/Assignments/Ex2_OOP/data/G3.json");
+        graphAlgoTest.load("./data/G3.json");
         List<NodeData> listToTest = graphAlgoTest.shortestPath(3, 47);
         for(NodeData node : listToTest){
             System.out.println(node.getInfo());
@@ -228,8 +223,8 @@ class DirectedWeightedGraphAlgorithmsClassTest {
     @Test
     void load_save() {
         DirectedWeightedGraphAlgorithms test2 = new DirectedWeightedGraphAlgorithmsClass();
-        String fileNameLoad = "/home/itamarq/OOP_2021/Assignments/Ex2_OOP/out/LargeConnectedGraphs/10000Nodes.json";
-        String fileNameSave = "/home/itamarq/OOP_2021/Assignments/Ex2_OOP/out/LargeConnectedGraphs/10000Test.json";
+        String fileNameLoad = "./data/G1.json";
+        String fileNameSave = "./out/G3.json";
         assertTrue(graphAlgoTest.load(fileNameLoad));
         assertTrue(graphAlgoTest.save(fileNameSave));
         test2.load(fileNameSave);
