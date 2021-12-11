@@ -36,13 +36,23 @@ Finding Shortest Path For List of Vertices - Using a greedy algorithm and Dijkst
 
   
 **Performance analysis:**
+
 isConnected:
+
 1,000 Vertices 10,000 Edges: 47 ms
+
 10,000 Vertices 100,000 Edges: 86 ms
+
 100,000 Vertices 2,000,000 Edges: 858 ms
+
 1,000,000 Vertices 10,000,000 Edges: could not create connected graph, 14 sec 64 ms for false result.
+
 Center:
+
 1,000 Vertices 10,000 Edges: 2 sec 794 ms
+
 10,000 Vertices 100,000 Edges: 10 min 57 sec
+
 100,000 Vertices 1,000,000 Edges: timeout
+
 1,000,000 Vertices 10,000,000 Edges: timeout
