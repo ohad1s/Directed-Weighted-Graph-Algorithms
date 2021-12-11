@@ -23,7 +23,7 @@ Finding Shortest Path For List of Vertices - Using a greedy algorithm and Dijkst
 
   First, run CMD from the driectory in which the jar file is located.
 
-  Next, run the following command: java -jar Ex2.jar <Json File>
+  Next, run the following command: java -jar Ex2.jar <Json File> 
   
   Json files are located in the data directory.
   
