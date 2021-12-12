@@ -27,6 +27,23 @@ Finding Shortest Path For List of Vertices - Using a greedy algorithm and Dijkst
   
   Json files are located in the data directory.
   
+  After running the jar file, the next window should apper (loading G3.json file):
+  
+  ![image](https://user-images.githubusercontent.com/78217803/145712799-cafa53ca-7a66-4055-abbb-78e03aa3f6a3.png)
+
+**how to use the GUI:**
+
+After the GUI is opened, on the top left there is the menu button.
+
+After preesing the menu button, a drop down menu should appear.
+
+At the drop down menu there are four options:
+
+1. load - this button allows to load a graph from a json file.
+2. save - this button allows to save a graph as a json file.
+3. Choose Algorithm - this allows to choose the algorithm we want to run on the current graph.
+4. Actions on the Graph - this allows us to preform actions on the graph such as removing and adding vertices, Edges Etc.
+
  
 **Project UML**
   
@@ -36,23 +53,24 @@ Finding Shortest Path For List of Vertices - Using a greedy algorithm and Dijkst
 
   
 **Performance analysis:**
+*1,000 Vertices 10,000 Edges Graph:*
 
-isConnected:
+isConnected: 47 ms
 
-1,000 Vertices 10,000 Edges: 47 ms
+center: 2 sec 794 ms
 
-10,000 Vertices 100,000 Edges: 86 ms
+*10,000 Vertices 100,000 Edges Graph:*
 
-100,000 Vertices 2,000,000 Edges: 858 ms
+isConnected: 86 ms
 
-1,000,000 Vertices 10,000,000 Edges: could not create connected graph, 14 sec 64 ms for false result.
+Center: 10 min 57 sec
 
-Center:
+*100,000 Verticies 1,000,000 Edges Graph:*
 
-1,000 Vertices 10,000 Edges: 2 sec 794 ms
+isConnected: 858 ms
 
-10,000 Vertices 100,000 Edges: 10 min 57 sec
+Center: timeout
 
-100,000 Vertices 1,000,000 Edges: timeout
+*1,000,000 Vertices 10,000,000 Edges Graph:*
 
-1,000,000 Vertices 10,000,000 Edges: timeout
+Could not create such connected graph.
